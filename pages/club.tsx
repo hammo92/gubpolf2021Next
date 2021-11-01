@@ -6,7 +6,7 @@ import { Model } from "@components/model";
 import { OrbitControls, CameraShake, Environment } from "@react-three/drei";
 import { GraphQLClient } from "graphql-request";
 import { useGet_GolfersQuery, Golfers } from "@generated/graphql";
-
+/*
 interface GolferModel {
     golfer: Golfers;
     position: number[];
@@ -19,12 +19,6 @@ const POSES_AMOUNT = 7;
 function Rig() {
     const [vec] = useState(() => new THREE.Vector3());
     const { camera, mouse } = useThree();
-    /*useFrame(() =>
-        camera.position.lerp(
-            vec.set(mouse.x * 2 + 10, mouse.y * 2 + 10, 20),
-            0.05
-        )
-    );*/
     camera.rotation.x = -0.5;
     camera.rotation.y = 0.4;
     camera.rotation.z = 0.2;
@@ -59,9 +53,9 @@ function Light() {
         </group>
     );
 }
-
+*/
 const Club = () => {
-    const array = [1, 2, 3, 4, 5, 6, 7, 3, 1, 2, 1, 2, 3, 4, 5, 6, 7, 3, 1, 2];
+    /*const array = [1, 2, 3, 4, 5, 6, 7, 3, 1, 2, 1, 2, 3, 4, 5, 6, 7, 3, 1, 2];
     const [golfers, setGolfers] = useState<GolferModel[]>();
     const graphQlClient = new GraphQLClient(
         `https://norcross.stepzen.net/golfers/sheet/__graphql`,
@@ -92,10 +86,10 @@ const Club = () => {
                     golferArray.push({ golfer, position, pose });
                 });
         setGolfers(golferArray);
-    }, [data]);
+    }, [data]);*/
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
-            <Canvas shadows camera={{ position: [1, 1.5, 15], fov: 50 }}>
+            {/*<Canvas shadows camera={{ position: [1, 1.5, 15], fov: 50 }}>
                 <Suspense fallback={null}>
                     <ambientLight intensity={0.5} />
                     <spotLight position={[50, 50, -30]} castShadow />
@@ -118,6 +112,7 @@ const Club = () => {
                         {/* <Model pose={0} position={[0, 0, 0]} />
                         <Model pose={1} position={[1, 0, -1]} />
                         <Model pose={0} position={[-1, 0, -1]} /> */}
+            {/*}
                     </group>
                     <mesh
                         rotation={[-0.5 * Math.PI, 0, 0]}
@@ -141,7 +136,7 @@ const Club = () => {
                         dispatchEvent={undefined}
                     />
                 </Suspense>
-            </Canvas>
+                        </Canvas>*/}
         </div>
     );
 };

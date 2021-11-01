@@ -17,81 +17,75 @@ import {
 import { useGraph } from "@react-three/fiber";
 import { a, useSpring } from "@react-spring/three";
 import { SkeletonUtils } from "three-stdlib";
-
-const hiddenNodes = ["Ch33_Eyelashes"];
-const shirtColour = ["hotpink", "aquamarine", "white", "orange"];
-const jacketOptions = ["hotpink", "gray", "black", "navy"];
-const hairOptions = ["black", "#F0E2B6", "#b06500", "#654321"];
-const shoeOptions = ["black", "brown", "white"];
-const trouserOptions = [
-    "hotpink",
-    "aquamarine",
-    "white",
-    "orange",
-    "black",
-    "navy",
+import { ModelProps } from "@interfaces/model";
+import { SkinnedMesh } from "./skinnedMesh";
+const hiddenNodes = ["Ch33_Eyelashes", "Ch33_Belt"];
+const nonTextured = [
+    "Ch33_Tie",
+    "Ch33_Shirt",
+    "Ch33_Hair",
+    "CH33_Suit",
+    "Ch33_Shoes",
+    "Ch33_pants",
 ];
-const nonTextured = ["Ch33_Tie", "Ch33_Shirt", "Ch33_Hair"];
 
-export const Model = ({ pose, modelIndex, golfer, ...props }) => {
+export const Model: React.FC<ModelProps> = ({
+    pose = 0,
+    modelIndex = 0,
+    golfer,
+    shirtColour = "white",
+    trouserColour = "black",
+    jacketColour = "black",
+    hairColour = "black",
+    shoeColour = "brown",
+    skinColour = "#000000",
+    dancing = false,
+    ...props
+}) => {
     // Fetch model and a separate texture
     const { scene, animations } = useGLTF("/drunkMan.glb");
-    console.log(`scene`, scene);
-    const [colours, setColours] = useState({
-        shirt: "#ffffff",
-        trousers: "#ffffff",
-        jacket: "#ffffff",
-        hair: "#000000",
-        shoe: "#000000",
-    });
     const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+
     const { nodes } = useGraph(clone);
+    console.log(`nodes`, nodes);
     const textures = [
         useTexture("/Ch33_1001_Diffuse_green.png"),
         useTexture("/Ch33_1001_Diffuse2.png"),
     ];
-    useEffect(() => {
-        setColours({
-            shirt: shirtColour[Math.floor(Math.random() * shirtColour.length)],
-            trousers:
-                trouserOptions[
-                    Math.floor(Math.random() * trouserOptions.length)
-                ],
-            jacket: jacketOptions[
-                Math.floor(Math.random() * trouserOptions.length)
-            ],
-            hair: hairOptions[Math.floor(Math.random() * hairOptions.length)],
-            shoe: shoeOptions[Math.floor(Math.random() * shoeOptions.length)],
-        });
-    }, []);
     // Extract animation actions
     const { ref, actions, names } = useAnimations(animations);
     // Hover and animation-index states
     const [hovered, setHovered] = useState(false);
-    const [index, setIndex] = useState(pose);
+    const [index, setIndex] = useState(0);
+    useEffect(() => {
+        dancing ? setIndex(pose) : setIndex(0);
+    }, [dancing, pose]);
     // Animate the selection halo
-    const { color, scale } = useSpring({
-        scale: hovered ? [1.15, 1.15, 1] : [1, 1, 1],
+    const { color } = useSpring({
         color: hovered ? "hotpink" : "aquamarine",
     });
-    const setColor = (key) => {
+    const setColor = (key: string): string => {
         if (key === "Ch33_Tie") return "green";
-        if (key === "Ch33_Shirt") return colours.shirt;
-        if (key === "Ch33_Pants") return colours.trousers;
-        if (key === "Ch33_Suit") return colours.jacket;
-        if (key === "Ch33_Hair") return colours.hair;
-        if (key === "Ch33_Hair") return colours.shoe;
-        return null;
+        if (key === "Ch33_Shirt") return shirtColour;
+        if (key === "Ch33_Pants") return trouserColour;
+        if (key === "Ch33_Suit") return jacketColour;
+        if (key === "Ch33_Hair") return hairColour;
+        if (key === "Ch33_Shoes") return shoeColour;
+        if (key === "Ch33_Body") return skinColour;
+        return "";
     };
 
     // Change cursor on hover-state
     useCursor(hovered);
     // Change animation when the index changes
+
     useEffect(() => {
         // Reset and fade in animation after an index has been changed
-        actions[names[index]].reset().fadeIn(0.5).play();
+        actions[names[index]]?.reset().fadeIn(0.5).play();
         // In the clean-up phase, fade it out
-        return () => actions[names[index]].fadeOut(0.5);
+        return () => {
+            actions[names[index]]?.fadeOut(0.5);
+        };
     }, [index, actions, names]);
     return (
         <group ref={ref} {...props} dispose={null}>
@@ -104,14 +98,7 @@ export const Model = ({ pose, modelIndex, golfer, ...props }) => {
                         !hiddenNodes.includes(nodeKey)
                     )
                         return (
-                            <skinnedMesh
-                                castShadow
-                                receiveShadow
-                                geometry={node.geometry}
-                                skeleton={node.skeleton}
-                                rotation={[-Math.PI / 2, 0, 0]}
-                                scale={[100, 100, 100]}
-                            >
+                            <SkinnedMesh node={node}>
                                 <meshStandardMaterial
                                     map={
                                         nonTextured.includes(nodeKey)
@@ -124,38 +111,39 @@ export const Model = ({ pose, modelIndex, golfer, ...props }) => {
                                             ? undefined
                                             : false
                                     }
-                                    skinning
                                 />
-                            </skinnedMesh>
+                            </SkinnedMesh>
                         );
                 })}
             </group>
-            <group
-                onPointerOver={() => setHovered(true)}
-                onPointerOut={() => setHovered(false)}
-            >
-                <a.mesh receiveShadow position={[0, 2.5, 0]} scale={scale}>
-                    <a.meshStandardMaterial color={color} />
-                    <Html distanceFactor={10}>
-                        <Box position="relative">
-                            <Box
-                                background="#dedede"
-                                p={10}
-                                position="relative"
-                                left="-50%"
-                                cursor="pointer"
-                                onClick={() =>
-                                    setIndex((index + 1) % names.length)
-                                }
-                                whiteSpace="nowrap"
-                                borderRadius="5px"
-                            >
-                                <span>{`${golfer.firstName__B} ${golfer.secondName__A}`}</span>
+            {golfer && (
+                <group
+                    onPointerOver={() => setHovered(true)}
+                    onPointerOut={() => setHovered(false)}
+                >
+                    <a.mesh receiveShadow position={[0, 2.5, 0]}>
+                        <a.meshStandardMaterial color={color} />
+                        <Html distanceFactor={10}>
+                            <Box position="relative">
+                                <Box
+                                    background="#dedede"
+                                    p={10}
+                                    position="relative"
+                                    left="-50%"
+                                    cursor="pointer"
+                                    onClick={() =>
+                                        setIndex((index + 1) % names.length)
+                                    }
+                                    whiteSpace="nowrap"
+                                    borderRadius="5px"
+                                >
+                                    <span>{`${golfer.firstName__B} ${golfer.secondName__A}`}</span>
+                                </Box>
                             </Box>
-                        </Box>
-                    </Html>
-                </a.mesh>
-            </group>
+                        </Html>
+                    </a.mesh>
+                </group>
+            )}
         </group>
     );
 };
