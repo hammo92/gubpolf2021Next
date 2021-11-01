@@ -24,9 +24,9 @@ const nonTextured = [
     "Ch33_Tie",
     "Ch33_Shirt",
     "Ch33_Hair",
-    "CH33_Suit",
+    "Ch33_Suit",
     "Ch33_Shoes",
-    "Ch33_pants",
+    "Ch33_Pants",
 ];
 
 export const Model: React.FC<ModelProps> = ({
@@ -43,14 +43,14 @@ export const Model: React.FC<ModelProps> = ({
     ...props
 }) => {
     // Fetch model and a separate texture
-    const { scene, animations } = useGLTF("/drunkMan.glb");
+    const { scene, animations } = useGLTF("/drunkManCompressed.gltf");
     const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 
     const { nodes } = useGraph(clone);
     console.log(`nodes`, nodes);
     const textures = [
-        useTexture("/Ch33_1001_Diffuse_green.png"),
-        useTexture("/Ch33_1001_Diffuse2.png"),
+        useTexture("/Ch33_1001_Diffuse_greenJPG.jpg"),
+        useTexture("/Ch33_1001_DiffuseJPG.jpg"),
     ];
     // Extract animation actions
     const { ref, actions, names } = useAnimations(animations);
@@ -93,6 +93,11 @@ export const Model: React.FC<ModelProps> = ({
                 <primitive object={nodes.mixamorig7Hips} />
                 {Object.keys(nodes).map((nodeKey) => {
                     const node = nodes[nodeKey];
+                    console.log(
+                        `nodeKey, nonTextured.includes(nodeKey)`,
+                        nodeKey,
+                        nonTextured.includes(nodeKey),
+                    );
                     if (
                         node.type === "SkinnedMesh" &&
                         !hiddenNodes.includes(nodeKey)
