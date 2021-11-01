@@ -1,0 +1,65 @@
+{
+    "name": "gubpolf2021Next",
+    "plugins": [
+        {
+            "name": "Chakra UI",
+            "description": "Chakra UI is a simple, modular and accessible component library that gives you the building blocks you need to build your React applications.",
+            "url": "https://chakra-ui.com/docs/getting-started"
+        },
+        {
+            "name": "Styled Components",
+            "description": "Utilising tagged template literals (a recent addition to JavaScript) and the power of CSS, styled-components allows you to write actual CSS code to style your components.",
+            "url": "https://styled-components.com/docs"
+        },
+        {
+            "name": "Styled System",
+            "description": "Styled System is a collection of utility functions that add style props to your React components and allows you to control styles based on a global theme object with typographic scales, colors, and layout properties.",
+            "url": "https://styled-system.com/getting-started"
+        },
+        {
+            "name": "Fetch",
+            "description": "Next.js has a built-in polyfill for the fetch API. You don't need to worry about using it on either server or client side.",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"
+        },
+        {
+            "name": "Axios",
+            "description": "Promise based HTTP client for the browser and node.js.",
+            "url": "https://github.com/axios/axios"
+        },
+        {
+            "name": "Environment Variables",
+            "description": "Use environment variables in your next.js project for server side, client or both.",
+            "url": "https://github.com/vercel/next.js/tree/canary/examples/environment-variables"
+        },
+        {
+            "name": "graphql-request",
+            "description": "Minimal GraphQL client supporting Node and browsers for scripts or simple apps",
+            "url": "https://github.com/prisma-labs/graphql-request"
+        },
+        {
+            "name": "React Query",
+            "description": "Hooks for fetching, caching and updating asynchronous data in React.",
+            "url": "https://react-query.tanstack.com/overview"
+        },
+        {
+            "name": "react-use",
+            "description": "A Collection of useful React hooks.",
+            "url": "https://github.com/streamich/react-use"
+        },
+        {
+            "name": "Zustand",
+            "description": "A small, fast and scalable bearbones state-management solution using simplified flux principles.",
+            "url": "https://github.com/pmndrs/zustand"
+        },
+        {
+            "name": "ESLint",
+            "description": "A pluggable and configurable linter tool for identifying and reporting on patterns in JavaScript. Maintain your code quality with ease.",
+            "url": "https://eslint.org/docs/user-guide/getting-started"
+        },
+        {
+            "name": "Prettier",
+            "description": "An opinionated code formatter; Supports many languages; Integrates with most editors.",
+            "url": "https://prettier.io/docs/en/index.html"
+        }
+    ]
+}
