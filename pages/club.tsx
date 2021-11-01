@@ -2,7 +2,7 @@ import { Spacer, Flex } from "@chakra-ui/react";
 import * as THREE from "three";
 import React, { Suspense, useState, useRef, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import Model from "@components/Model";
+import { Model } from "@components/model";
 import { OrbitControls, CameraShake, Environment } from "@react-three/drei";
 import { GraphQLClient } from "graphql-request";
 import { useGet_GolfersQuery, Golfers } from "@generated/graphql";
