@@ -33,7 +33,7 @@ const trouserOptions = [
 ];
 const nonTextured = ["Ch33_Tie", "Ch33_Shirt", "Ch33_Hair"];
 
-export default function Model({ pose, modelIndex, golfer, ...props }) {
+export const Model = ({ pose, modelIndex, golfer, ...props }) => {
     // Fetch model and a separate texture
     const { scene, animations } = useGLTF("/drunkMan.glb");
     console.log(`scene`, scene);
@@ -158,4 +158,4 @@ export default function Model({ pose, modelIndex, golfer, ...props }) {
             </group>
         </group>
     );
-}
+};
