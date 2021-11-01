@@ -1,0 +1,12 @@
+query GET_GOLFERS {
+    golfers(q: "Select *") {
+        secondName__A
+        firstName__B
+        year__C
+        attending__D
+        paid__E
+        tieNeeded__F
+        greenJacketOwner__G
+        tieColour__H
+    }
+}
