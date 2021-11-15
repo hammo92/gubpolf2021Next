@@ -1,8 +1,5 @@
 # codegen.yaml
-schema:
-    - https://norcross.stepzen.net/golfers/sheet/__graphql:
-          headers:
-              Authorization: "apikey norcross::stepzen.net+1000::cd1953dda138553df888616dabd088bc453eb0a030eaac6f7bb99ed7a94bb7a6"
+schema: https://5rziby0p.api.sanity.io/v1/graphql/production/default
 documents: "src/**/*.graphql"
 generates:
     src/generated/graphql.ts:

@@ -17,7 +17,7 @@ import {
 import { useGraph } from "@react-three/fiber";
 import { a, useSpring } from "@react-spring/three";
 import { SkeletonUtils } from "three-stdlib";
-import { ModelProps } from "@interfaces/model";
+import { Golfer, LeviaInput } from "@interfaces/model";
 import { SkinnedMesh } from "./skinnedMesh";
 const hiddenNodes = ["Ch33_Eyelashes", "Ch33_Belt"];
 const nonTextured = [
@@ -29,10 +29,87 @@ const nonTextured = [
     "Ch33_Pants",
 ];
 
-export const Model: React.FC<ModelProps> = ({
-    pose = 0,
+const getTieColour = (year: number | undefined) => {
+    let colour = "blue";
+    switch (year) {
+        case -1:
+            colour = "blue";
+            break;
+        case 0:
+            colour = "blue";
+            break;
+        case 1:
+            colour = "blue";
+            break;
+        case 2:
+            colour = "#1b2c19";
+            break;
+        case 3:
+            colour = "#920619";
+            break;
+        case 4:
+            colour = "#000000";
+            break;
+        case 5:
+            colour = "#e29ac7";
+            break;
+        case 6:
+            colour = "blue";
+            break;
+        case 7:
+            colour = "#e96c33";
+            break;
+        case 8:
+            colour = "#380e6e";
+            break;
+        case 9:
+            colour = "#d8d51b";
+            break;
+        case 10:
+            colour = "#8adf62";
+            break;
+        case 11:
+            colour = "blue";
+            break;
+        case 12:
+            colour = "blue";
+            break;
+    }
+    return colour;
+};
+
+const NameCard: React.FC<{ name: string }> = ({ name }) => (
+    <group
+    //onPointerOver={() => setHovered(true)}
+    //onPointerOut={() => setHovered(false)}
+    >
+        <a.mesh receiveShadow position={[0, 2.5, 0]}>
+            <a.meshStandardMaterial color={"#fefefe"} />
+            <Html distanceFactor={10}>
+                <Box position="relative">
+                    <Box
+                        background="#dedede"
+                        p={10}
+                        position="relative"
+                        left="-50%"
+                        cursor="pointer"
+                        //onClick={() => setIndex((index + 1) % names.length)}
+                        whiteSpace="nowrap"
+                        borderRadius="5px"
+                    >
+                        <span>{name}</span>
+                    </Box>
+                </Box>
+            </Html>
+        </a.mesh>
+    </group>
+);
+
+export const Model: React.FC<Golfer> = ({
+    name,
+    year,
+    favouriteMove = 0,
     modelIndex = 0,
-    golfer,
     shirtColour = "white",
     trouserColour = "black",
     jacketColour = "black",
@@ -42,12 +119,12 @@ export const Model: React.FC<ModelProps> = ({
     dancing = false,
     ...props
 }) => {
+    console.log(`name`, name);
     // Fetch model and a separate texture
     const { scene, animations } = useGLTF("/drunkManCompressed.gltf");
     const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 
     const { nodes } = useGraph(clone);
-    console.log(`nodes`, nodes);
     const textures = [
         useTexture("/Ch33_1001_Diffuse_greenJPG.jpg"),
         useTexture("/Ch33_1001_DiffuseJPG.jpg"),
@@ -58,14 +135,15 @@ export const Model: React.FC<ModelProps> = ({
     const [hovered, setHovered] = useState(false);
     const [index, setIndex] = useState(0);
     useEffect(() => {
-        dancing ? setIndex(pose) : setIndex(0);
-    }, [dancing, pose]);
+        dancing ? setIndex(favouriteMove) : setIndex(0);
+    }, [dancing, favouriteMove]);
     // Animate the selection halo
     const { color } = useSpring({
         color: hovered ? "hotpink" : "aquamarine",
     });
+
     const setColor = (key: string): string => {
-        if (key === "Ch33_Tie") return "green";
+        if (key === "Ch33_Tie") return getTieColour(year);
         if (key === "Ch33_Shirt") return shirtColour;
         if (key === "Ch33_Pants") return trouserColour;
         if (key === "Ch33_Suit") return jacketColour;
@@ -93,11 +171,6 @@ export const Model: React.FC<ModelProps> = ({
                 <primitive object={nodes.mixamorig7Hips} />
                 {Object.keys(nodes).map((nodeKey) => {
                     const node = nodes[nodeKey];
-                    console.log(
-                        `nodeKey, nonTextured.includes(nodeKey)`,
-                        nodeKey,
-                        nonTextured.includes(nodeKey),
-                    );
                     if (
                         node.type === "SkinnedMesh" &&
                         !hiddenNodes.includes(nodeKey)
@@ -121,34 +194,8 @@ export const Model: React.FC<ModelProps> = ({
                         );
                 })}
             </group>
-            {golfer && (
-                <group
-                    onPointerOver={() => setHovered(true)}
-                    onPointerOut={() => setHovered(false)}
-                >
-                    <a.mesh receiveShadow position={[0, 2.5, 0]}>
-                        <a.meshStandardMaterial color={color} />
-                        <Html distanceFactor={10}>
-                            <Box position="relative">
-                                <Box
-                                    background="#dedede"
-                                    p={10}
-                                    position="relative"
-                                    left="-50%"
-                                    cursor="pointer"
-                                    onClick={() =>
-                                        setIndex((index + 1) % names.length)
-                                    }
-                                    whiteSpace="nowrap"
-                                    borderRadius="5px"
-                                >
-                                    <span>{`${golfer.firstName__B} ${golfer.secondName__A}`}</span>
-                                </Box>
-                            </Box>
-                        </Html>
-                    </a.mesh>
-                </group>
-            )}
+
+            {name && <NameCard name={name} />}
         </group>
     );
 };

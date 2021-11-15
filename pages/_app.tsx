@@ -4,6 +4,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import theme from "@definitions/chakra/theme";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Hydrate } from "react-query/hydration";
+import GlobalStyle from "@styles/globalStyles";
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
     const queryClient = new QueryClient();
@@ -11,6 +12,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         <ChakraProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
                 <Hydrate state={pageProps.dehydratedState}>
+                    <GlobalStyle />
                     <Component {...pageProps} />
                 </Hydrate>
             </QueryClientProvider>

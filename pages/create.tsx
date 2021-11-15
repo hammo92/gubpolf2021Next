@@ -4,15 +4,59 @@ import React, { Suspense, useState, useRef, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Model } from "@components/model";
 import { OrbitControls, CameraShake, Environment } from "@react-three/drei";
-import { GraphQLClient } from "graphql-request";
-import { useGet_GolfersQuery, Golfers } from "@generated/graphql";
-import { useControls } from "leva";
+import { GraphQLClient, gql } from "graphql-request";
+import { useGet_GolfersQuery } from "@generated/graphql";
+import { useControls, button, Leva } from "leva";
+import { PaymentModal } from "@components";
+import { useStore } from "src/zustand";
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure,
+    Button,
+} from "@chakra-ui/react";
 
-interface GolferModel {
-    golfer: Golfers;
-    position: number[];
-    pose: number;
-}
+const graphQlClient = new GraphQLClient(
+    `https://norcross.stepzen.net/golfers/sheet/__graphql`,
+    {
+        headers: {
+            Authorization:
+                "apikey norcross::stepzen.net+1000::cd1953dda138553df888616dabd088bc453eb0a030eaac6f7bb99ed7a94bb7a6",
+        },
+    },
+);
+
+const mutation = gql`
+    mutation AddGolfers(
+        $secondName__A: String!
+        $firstName__B: String!
+        $year__C: String!
+        $attending__D: String!
+        $paid__E: String!
+        $tieNeeded__F: String!
+        $greenJacketOwner__G: String!
+        $tieColour__H: String!
+    ) {
+        addGolfers(
+            attending__D: $attending__D
+            firstName__B: $firstName__B
+            greenJacketOwner__G: $greenJacketOwner__G
+            paid__E: $paid__E
+            secondName__A: $secondName__A
+            tieColour__H: $tieColour__H
+            tieNeeded__F: $tieNeeded__F
+            year__C: $year__C
+        ) {
+            secondName__A
+            firstName__B
+        }
+    }
+`;
 
 function Rig() {
     const [vec] = useState(() => new THREE.Vector3());
@@ -59,7 +103,10 @@ function Light() {
 }
 
 const Create = () => {
+    const golfer = useStore();
     const {
+        name,
+        year,
         skinColour,
         hairColour,
         jacketColour,
@@ -68,28 +115,12 @@ const Create = () => {
         shoeColour,
         dancing,
         favouriteMove,
-    } = useControls({
-        skinColour: "#ffffff",
-        hairColour: "#000000",
-        jacketColour: "#000000",
-        shirtColour: "#ffffff",
-        trouserColour: "#000000",
-        shoeColour: "#000000",
-        dancing: false,
-        favouriteMove: { value: 4, min: 4, max: 7, step: 1 },
-    });
-    const graphQlClient = new GraphQLClient(
-        `https://norcross.stepzen.net/golfers/sheet/__graphql`,
-        {
-            headers: {
-                Authorization:
-                    "apikey norcross::stepzen.net+1000::cd1953dda138553df888616dabd088bc453eb0a030eaac6f7bb99ed7a94bb7a6",
-            },
-        },
-    );
+    } = useControls({ ...golfer });
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const { data } = useGet_GolfersQuery(graphQlClient, {});
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
+            <Leva oneLineLabels={true} titleBar={{ title: "What am I like" }} />
             <Canvas shadows camera={{ position: [1, 0.5, 5], fov: 40 }}>
                 <Suspense fallback={null}>
                     <ambientLight intensity={0.5} />
@@ -105,8 +136,10 @@ const Create = () => {
                             trouserColour={trouserColour}
                             shoeColour={shoeColour}
                             dancing={dancing}
-                            pose={favouriteMove}
+                            favouriteMove={favouriteMove}
                             skinColour={skinColour}
+                            name={name}
+                            year={year}
                         />
 
                         {/* <Model pose={0} position={[0, 0, 0]} />
@@ -118,7 +151,7 @@ const Create = () => {
                         position={[0, -1, 0]}
                         receiveShadow
                     >
-                        <planeBufferGeometry args={[150, 50, 1, 1]} />
+                        <planeBufferGeometry args={[500, 500, 1, 1]} />
                         <shadowMaterial transparent opacity={0.2} />
                         <meshStandardMaterial color="#040314" />
                     </mesh>
@@ -126,8 +159,8 @@ const Create = () => {
                     <Light />
                     <Rig />
                     <OrbitControls
-                        enablePan={true}
-                        enableZoom={true}
+                        enablePan={false}
+                        enableZoom={false}
                         enableRotate={true}
                         addEventListener={undefined}
                         hasEventListener={undefined}
@@ -136,6 +169,7 @@ const Create = () => {
                     />
                 </Suspense>
             </Canvas>
+            <PaymentModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
         </div>
     );
 };
