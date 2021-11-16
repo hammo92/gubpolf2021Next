@@ -5,7 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Model } from "@components/model";
 import { OrbitControls, CameraShake, Environment } from "@react-three/drei";
 import { GraphQLClient } from "graphql-request";
-import { useGet_GolfersQuery, Golfers } from "@generated/graphql";
+import { useGet_GolfersQuery } from "@generated/graphql";
 /*
 interface GolferModel {
     golfer: Golfers;
