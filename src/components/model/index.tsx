@@ -19,6 +19,7 @@ import { a, useSpring } from "@react-spring/three";
 import { SkeletonUtils } from "three-stdlib";
 import { Golfer, LeviaInput } from "@interfaces/model";
 import { SkinnedMesh } from "./skinnedMesh";
+import { useStore } from "src/zustand";
 const hiddenNodes = ["Ch33_Eyelashes", "Ch33_Belt"];
 const nonTextured = [
     "Ch33_Tie",
@@ -105,25 +106,24 @@ const NameCard: React.FC<{ name: string }> = ({ name }) => (
     </group>
 );
 
-export const Model: React.FC<Golfer> = ({
-    name,
-    year,
-    favouriteMove = 0,
-    modelIndex = 0,
-    shirtColour = "white",
-    trouserColour = "black",
-    jacketColour = "black",
-    hairColour = "black",
-    shoeColour = "brown",
-    skinColour = "#000000",
-    dancing = false,
-    ...props
-}) => {
-    console.log(`name`, name);
+export const Model: React.FC = () => {
+    const golfer = useStore();
+    const {
+        name,
+        year = 0,
+        skinColour = "#ffffff",
+        hairColour = "#000000",
+        jacketColour = "#000000",
+        shirtColour = "#ffffff",
+        trouserColour = "#000000",
+        shoeColour = "#000000",
+        dancing = false,
+        favouriteMove = 4,
+        idle = 0,
+    } = golfer.golfer;
     // Fetch model and a separate texture
     const { scene, animations } = useGLTF("/drunkManCompressed.gltf");
     const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-
     const { nodes } = useGraph(clone);
     const textures = [
         useTexture("/Ch33_1001_Diffuse_greenJPG.jpg"),
@@ -134,15 +134,18 @@ export const Model: React.FC<Golfer> = ({
     // Hover and animation-index states
     const [hovered, setHovered] = useState(false);
     const [index, setIndex] = useState(0);
+    console.log(`golfer`, golfer);
     useEffect(() => {
-        dancing ? setIndex(favouriteMove) : setIndex(0);
-    }, [dancing, favouriteMove]);
+        console.log(`trigger`);
+        dancing ? setIndex(favouriteMove) : setIndex(idle);
+    }, [dancing, favouriteMove, idle]);
     // Animate the selection halo
     const { color } = useSpring({
         color: hovered ? "hotpink" : "aquamarine",
     });
+    console.log(`index`, index);
 
-    const setColor = (key: string): string => {
+    const setColor = (key: string | undefined): string | undefined => {
         if (key === "Ch33_Tie") return getTieColour(year);
         if (key === "Ch33_Shirt") return shirtColour;
         if (key === "Ch33_Pants") return trouserColour;
@@ -158,6 +161,7 @@ export const Model: React.FC<Golfer> = ({
     // Change animation when the index changes
 
     useEffect(() => {
+        console.log(`index`, index);
         // Reset and fade in animation after an index has been changed
         actions[names[index]]?.reset().fadeIn(0.5).play();
         // In the clean-up phase, fade it out
@@ -166,7 +170,7 @@ export const Model: React.FC<Golfer> = ({
         };
     }, [index, actions, names]);
     return (
-        <group ref={ref} {...props} dispose={null}>
+        <group ref={ref} dispose={null}>
             <group rotation={[Math.PI / 2, 0, 0]} scale={[0.01, 0.01, 0.01]}>
                 <primitive object={nodes.mixamorig7Hips} />
                 {Object.keys(nodes).map((nodeKey) => {

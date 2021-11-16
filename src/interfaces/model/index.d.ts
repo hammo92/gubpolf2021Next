@@ -1,4 +1,5 @@
 import { Golfers } from "@generated";
+import { FolderInput, LevaInputProps } from "leva/dist/declarations/src/types";
 
 interface LeviaInput {
     label: string;
@@ -11,17 +12,14 @@ interface LeviaInput {
     };
 }
 interface LevaGolfer {
-    name?: LeviaInput;
-    year: LeviaInput;
-    shirtColour?: LeviaInput;
-    trouserColour?: LeviaInput;
-    jacketColour?: LeviaInput;
-    hairColour?: LeviaInput;
-    shoeColour?: LeviaInput;
-    dancing?: LeviaInput;
-    skinColour?: LeviaInput;
-    favouriteMove?: LeviaInput;
-    needsTie?: LeviaInput;
+    name?: LevaInputProps;
+    year?: LevaInputProps;
+    idle?: LevaInputProps;
+    Body?: FolderInput<unknown>;
+    Clothes?: FolderInput<unknown>;
+    Moves?: FolderInput<unknown>;
+
+    needsTie?: LevaInputProps;
 }
 
 interface Golfer {
@@ -33,11 +31,18 @@ interface Golfer {
     jacketColour?: string;
     hairColour?: string;
     shoeColour?: string;
-    dancing?: string;
+    dancing?: boolean;
     skinColour?: string;
     favouriteMove?: number;
     needsTie?: boolean;
+    idle?: number;
 }
+
+export type Store = {
+    golfer: Golfer;
+    levaGolfer: LevaGolfer;
+};
+
 export interface ModelProps {
     golfer: Golfer;
 }

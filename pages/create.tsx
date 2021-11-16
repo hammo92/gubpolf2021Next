@@ -115,12 +115,13 @@ const Create = () => {
         shoeColour,
         dancing,
         favouriteMove,
-    } = useControls({ ...golfer });
+    } = useControls({ ...golfer.levaGolfer });
     const { isOpen, onOpen, onClose } = useDisclosure();
+    console.log(`golfer`, golfer);
     const { data } = useGet_GolfersQuery(graphQlClient, {});
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
-            <Leva oneLineLabels={true} titleBar={{ title: "What am I like" }} />
+            <Leva titleBar={{ title: "What am I like" }} />
             <Canvas shadows camera={{ position: [1, 0.5, 5], fov: 40 }}>
                 <Suspense fallback={null}>
                     <ambientLight intensity={0.5} />
@@ -129,18 +130,7 @@ const Create = () => {
                     <pointLight position={[0, -5, 5]} intensity={0.5} />
 
                     <group position={[0, -1, 0]}>
-                        <Model
-                            hairColour={hairColour}
-                            jacketColour={jacketColour}
-                            shirtColour={shirtColour}
-                            trouserColour={trouserColour}
-                            shoeColour={shoeColour}
-                            dancing={dancing}
-                            favouriteMove={favouriteMove}
-                            skinColour={skinColour}
-                            name={name}
-                            year={year}
-                        />
+                        {golfer && <Model />}
 
                         {/* <Model pose={0} position={[0, 0, 0]} />
                         <Model pose={1} position={[1, 0, -1]} />
