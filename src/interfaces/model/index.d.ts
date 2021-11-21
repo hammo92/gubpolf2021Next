@@ -40,6 +40,7 @@ export type Store = {
     golfer: Golfer;
     levaGolfer: LevaGolfer;
     dancing: boolean;
+    stripeSessionId: string;
     setDancing: (value: boolean) => void;
 };
 

@@ -2,8 +2,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 async function CreateStripeSession(req, res) {
     const { items } = req.body;
-    console.log(`item`, items);
-    const redirectURL = "http://localhost:3000";
+    const redirectURL = "http://localhost:3000/paymentSuccess";
 
     const transformedItems = items.map((item) => ({
         price_data: {

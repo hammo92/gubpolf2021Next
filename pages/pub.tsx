@@ -69,12 +69,13 @@ const Club = () => {
     );
     const { data } = useGet_GolfersQuery(graphQlClient, {});
     const { dancing, setDancing } = useStore();
-    const positions = useRef([[0, 0, 0]]);
+    const [positions, setPositions] = useState([[0, 0, 0]]);
     useEffect(() => {
         if (data?.allGolfer) {
-            positions.current = data?.allGolfer.map((golfer, index) =>
+            const pos = data?.allGolfer.map((golfer, index) =>
                 getPosition(index),
             );
+            setPositions(pos);
         }
     }, [data]);
     return (
@@ -108,7 +109,7 @@ const Club = () => {
                                 return (
                                     <Model
                                         golferData={golfer}
-                                        position={positions.current[index]}
+                                        position={positions[index]}
                                         key={`model ${index}`}
                                     />
                                 );

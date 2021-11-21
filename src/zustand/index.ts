@@ -10,11 +10,13 @@ const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 );
 
-const createCheckOutSession = async (items) => {
+const createCheckOutSession = async (items, golfer) => {
     const stripe = await stripePromise;
     const checkoutSession = await axios.post("/api/create-stripe-session", {
         items: items,
     });
+    localStorage.setItem("stripeSessionId", checkoutSession.data.id);
+    localStorage.setItem("golfer", JSON.stringify(golfer));
     const result = await stripe.redirectToCheckout({
         sessionId: checkoutSession.data.id,
     });
@@ -37,6 +39,7 @@ export const useStore = create<Store>((set, get) => ({
         trouserColour: "black",
         year: 1,
     },
+    stripeSessionId: "",
     dancing: false,
     setDancing: (value: boolean) => set((state) => (state.dancing = value)),
     levaGolfer: {
@@ -206,7 +209,7 @@ export const useStore = create<Store>((set, get) => ({
         Payment: folder(
             {
                 "Do it": button(async () => {
-                    /*const items = [];
+                    const items = [];
                     const tieNeeded = get().golfer.tieNeeded;
                     const greenFee = {
                         name: "Green Fee",
@@ -222,11 +225,11 @@ export const useStore = create<Store>((set, get) => ({
                     };
                     items.push(greenFee);
                     tieNeeded && items.push(tie);
-                    const session = createCheckOutSession(items);*/
-                    const golfer = await axios.post("/api/create-golfer", {
+                    await createCheckOutSession(items, get().golfer);
+                    //await redirectToCheckout(session);
+                    /*const golfer = await axios.post("/api/create-golfer", {
                         golfer: get().golfer,
-                    });
-                    console.log(`golfer`, golfer);
+                    });*/
                 }),
             },
             {
