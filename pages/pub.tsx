@@ -3,7 +3,12 @@ import * as THREE from "three";
 import React, { Suspense, useState, useRef, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Model } from "@components/model";
-import { OrbitControls, CameraShake, Environment } from "@react-three/drei";
+import {
+    OrbitControls,
+    CameraShake,
+    Environment,
+    Loader,
+} from "@react-three/drei";
 import { GraphQLClient } from "graphql-request";
 import { useGet_GolfersQuery } from "@generated/graphql";
 import { DanceLight, RoomLight } from "@components/lights";
@@ -85,7 +90,7 @@ const Club = () => {
                     position: "absolute",
                     left: 0,
                     top: 0,
-                    zIndex: 999999,
+                    zIndex: 9,
                     margin: "10px",
                 }}
             >
@@ -138,6 +143,7 @@ const Club = () => {
                     />
                 </Suspense>
             </Canvas>
+            <Loader />
         </div>
     );
 };

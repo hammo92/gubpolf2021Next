@@ -1,26 +1,13 @@
-import { Spacer, Flex } from "@chakra-ui/react";
-import * as THREE from "three";
-import React, { Suspense, useState, useRef, useEffect } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Model } from "@components/model";
-import { OrbitControls, CameraShake, Environment } from "@react-three/drei";
-import { GraphQLClient, gql } from "graphql-request";
-import { useGet_GolfersQuery } from "@generated/graphql";
-import { useControls, button, Leva } from "leva";
-import { PaymentModal } from "@components";
-import { useStore } from "src/zustand";
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    useDisclosure,
-    Button,
-} from "@chakra-ui/react";
+import { Button, useDisclosure } from "@chakra-ui/react";
 import { DanceLight, RoomLight } from "@components/lights";
+import { Model } from "@components/model";
+import { CameraShake, Loader, OrbitControls } from "@react-three/drei";
+import { Canvas, useThree } from "@react-three/fiber";
+import { Leva, useControls } from "leva";
+import React, { Suspense, useState } from "react";
+import { useStore } from "src/zustand";
+import * as THREE from "three";
+import { useWindowSize } from "react-use";
 
 function Rig() {
     const [vec] = useState(() => new THREE.Vector3());
@@ -57,68 +44,69 @@ function randomIntFromInterval(min: number, max: number) {
 
 const Create = () => {
     const golfer = useStore();
-
     useControls(() => ({ ...golfer.levaGolfer }), []);
     const { dancing, setDancing } = golfer;
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
-        <div style={{ width: "100vw", height: "100vh" }}>
-            <div
-                style={{
-                    position: "absolute",
-                    left: 0,
-                    top: 0,
-                    zIndex: 999999,
-                    margin: "10px",
-                }}
-            >
-                <Button onClick={() => setDancing(!dancing ?? false)}>
-                    <p style={{ marginBottom: "5px" }}>{`Turn Music ${
-                        dancing ? "Off" : "On"
-                    }`}</p>
-                </Button>
-            </div>
-            <Leva titleBar={{ title: "What am I like" }} />
-            <Canvas shadows camera={{ position: [1, 0.5, 5], fov: 40 }}>
-                <Suspense fallback={null}>
-                    {/* <ambientLight intensity={0.5} />
+        <>
+            <div style={{ width: "100vw", height: "100vh" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        zIndex: 9,
+                        margin: "10px",
+                    }}
+                >
+                    <Button onClick={() => setDancing(!dancing ?? false)}>
+                        <p style={{ marginBottom: "5px" }}>{`Turn Music ${
+                            dancing ? "Off" : "On"
+                        }`}</p>
+                    </Button>
+                </div>
+                <Leva titleBar={{ title: "What am I like" }} />
+                <Canvas shadows camera={{ position: [1, 0.5, 5], fov: 40 }}>
+                    <Suspense fallback={null}>
+                        {/* <ambientLight intensity={0.5} />
                     <spotLight position={[50, 50, -30]} castShadow /> */}
 
-                    <pointLight position={[-10, 10, 5]} intensity={1} />
+                        <pointLight position={[-10, 10, 5]} intensity={1} />
 
-                    <group position={[0, -1, 0]}>
-                        {golfer && <Model />}
+                        <group position={[0, -1, 0]}>
+                            {golfer && <Model />}
 
-                        {/* <Model pose={0} position={[0, 0, 0]} />
+                            {/* <Model pose={0} position={[0, 0, 0]} />
                         <Model pose={1} position={[1, 0, -1]} />
                         <Model pose={0} position={[-1, 0, -1]} /> */}
-                    </group>
-                    <mesh
-                        rotation={[-0.5 * Math.PI, 0, 0]}
-                        position={[0, -1, 0]}
-                        receiveShadow
-                    >
-                        <planeBufferGeometry args={[500, 500, 1, 1]} />
-                        <shadowMaterial transparent opacity={0.2} />
-                        <meshStandardMaterial color="#040314" />
-                    </mesh>
-                    {/* <Environment preset="studio" /> */}
-                    <DanceLight dancing={dancing} />
-                    <RoomLight dancing={dancing} />
-                    <Rig />
-                    <OrbitControls
-                        enablePan={false}
-                        enableZoom={false}
-                        enableRotate={true}
-                        addEventListener={undefined}
-                        hasEventListener={undefined}
-                        removeEventListener={undefined}
-                        dispatchEvent={undefined}
-                    />
-                </Suspense>
-            </Canvas>
-            <PaymentModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
-        </div>
+                        </group>
+                        <mesh
+                            rotation={[-0.5 * Math.PI, 0, 0]}
+                            position={[0, -1, 0]}
+                            receiveShadow
+                        >
+                            <planeBufferGeometry args={[500, 500, 1, 1]} />
+                            <shadowMaterial transparent opacity={0.2} />
+                            <meshStandardMaterial color="#040314" />
+                        </mesh>
+                        {/* <Environment preset="studio" /> */}
+                        <DanceLight dancing={dancing} />
+                        <RoomLight dancing={dancing} />
+                        <Rig />
+                        <OrbitControls
+                            enablePan={false}
+                            enableZoom={false}
+                            enableRotate={true}
+                            addEventListener={undefined}
+                            hasEventListener={undefined}
+                            removeEventListener={undefined}
+                            dispatchEvent={undefined}
+                        />
+                    </Suspense>
+                </Canvas>
+                <Loader />
+            </div>
+        </>
     );
 };
 

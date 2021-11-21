@@ -46,6 +46,7 @@ export const useStore = create<Store>((set, get) => ({
         name: {
             value: "",
             label: "Name",
+            hint: "You can't really need more help with this one",
             onChange: (value: string) =>
                 set(
                     produce((state) => {
@@ -56,6 +57,7 @@ export const useStore = create<Store>((set, get) => ({
         year: {
             value: 0,
             label: "Year",
+            hint: "Your year, take the year you started at bishops and remove 2 (03 becomes 1)",
             min: -1,
             max: 12,
             step: 1,
@@ -72,6 +74,7 @@ export const useStore = create<Store>((set, get) => ({
                 Nope: false,
                 "Yeah (£10)": true,
             },
+            hint: "Have you got a tie or do you need to buy one",
             label: "Buy a Tie",
             onChange: (value: boolean) =>
                 set(
@@ -87,6 +90,7 @@ export const useStore = create<Store>((set, get) => ({
                         skinColour: {
                             value: "#ffffff",
                             label: "Skin Colour",
+                            hint: "You know where the line is, probably...",
                             onChange: (value: string) =>
                                 set(
                                     produce((state) => {
@@ -97,6 +101,7 @@ export const useStore = create<Store>((set, get) => ({
                         hairColour: {
                             value: "#000000",
                             label: "Hair Colour",
+                            hint: "How SJW are you?",
                             onChange: (value: string) =>
                                 set(
                                     produce((state) => {
@@ -114,6 +119,7 @@ export const useStore = create<Store>((set, get) => ({
                         jacketColour: {
                             value: "#000000",
                             label: "Jacket Colour",
+                            hint: "Bring some flair",
                             onChange: (value: string) =>
                                 set(
                                     produce((state) => {
@@ -124,6 +130,7 @@ export const useStore = create<Store>((set, get) => ({
                         shirtColour: {
                             value: "#ffffff",
                             label: "Shirt Colour",
+                            hint: "Some Panache",
                             onChange: (value: string) =>
                                 set(
                                     produce((state) => {
@@ -134,6 +141,7 @@ export const useStore = create<Store>((set, get) => ({
                         trouserColour: {
                             value: "#000000",
                             label: "Trouser Colour",
+                            hint: "Or do that",
                             onChange: (value: string) =>
                                 set(
                                     produce((state) => {
@@ -143,6 +151,7 @@ export const useStore = create<Store>((set, get) => ({
                         },
                         shoeColour: {
                             value: "#000000",
+                            hint: "Yeah, that was disappointing",
                             label: "Shoe Colour",
                             onChange: (value: string) =>
                                 set(
@@ -173,6 +182,7 @@ export const useStore = create<Store>((set, get) => ({
                         "Feeling it": 4,
                         "Not My Tune": 10,
                     },
+                    hint: "Keeping it chilled",
                     onChange: (value: number) =>
                         set(
                             produce((state) => {
@@ -182,6 +192,7 @@ export const useStore = create<Store>((set, get) => ({
                 },
                 favouriteMove: {
                     label: "Signature Move",
+                    hint: "Don't hold back",
                     options: {
                         "Snake Charmer": 0,
                         "Stir It Up": 2,

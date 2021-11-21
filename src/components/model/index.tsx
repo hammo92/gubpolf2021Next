@@ -87,7 +87,7 @@ const NameCard: React.FC<{ name: string }> = ({ name }) => (
     >
         <a.mesh receiveShadow position={[0, 2.5, 0]}>
             <a.meshStandardMaterial color={"#fefefe"} />
-            <Html distanceFactor={10}>
+            <Html distanceFactor={10} zIndexRange={[100, 0]}>
                 <Box position="relative">
                     <Box
                         background="#dedede"
@@ -111,7 +111,6 @@ export const Model: React.FC<{ golferData: Golfer; position: number[] }> = ({
     golferData,
     position,
 }) => {
-    console.log(`golferData`, golferData);
     const golfer = useStore();
     const {
         name,
