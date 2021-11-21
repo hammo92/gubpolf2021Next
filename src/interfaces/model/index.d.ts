@@ -25,13 +25,11 @@ interface LevaGolfer {
 interface Golfer {
     name?: string;
     year?: number;
-    modelIndex?: number;
     shirtColour?: string;
     trouserColour?: string;
     jacketColour?: string;
     hairColour?: string;
     shoeColour?: string;
-    dancing?: boolean;
     skinColour?: string;
     favouriteMove?: number;
     needsTie?: boolean;
@@ -41,6 +39,8 @@ interface Golfer {
 export type Store = {
     golfer: Golfer;
     levaGolfer: LevaGolfer;
+    dancing: boolean;
+    setDancing: (value: boolean) => void;
 };
 
 export interface ModelProps {

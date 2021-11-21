@@ -1,4 +1,4 @@
-import { Spacer, Flex } from "@chakra-ui/react";
+import { Spacer, Flex, Button } from "@chakra-ui/react";
 import * as THREE from "three";
 import React, { Suspense, useState, useRef, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -6,12 +6,8 @@ import { Model } from "@components/model";
 import { OrbitControls, CameraShake, Environment } from "@react-three/drei";
 import { GraphQLClient } from "graphql-request";
 import { useGet_GolfersQuery } from "@generated/graphql";
-/*
-interface GolferModel {
-    golfer: Golfers;
-    position: number[];
-    pose: number;
-}
+import { DanceLight, RoomLight } from "@components/lights";
+import { useStore } from "src/zustand";
 
 const ROW_LENGTH = 16;
 const POSES_AMOUNT = 7;
@@ -53,66 +49,70 @@ function Light() {
         </group>
     );
 }
-*/
+
+const getPosition = (index) => {
+    const position = [
+        (index % ROW_LENGTH) +
+            (index % ROW_LENGTH) * 1.2 +
+            Math.floor(Math.random() * (0.1 - -0.1 + 1) + -0.1),
+        0,
+        Math.floor(index / ROW_LENGTH) +
+            Math.floor(index / ROW_LENGTH) * 1.2 +
+            Math.floor(Math.random() * (0.1 - -0.1 + 1) + -0.1),
+    ];
+    return position;
+};
+
 const Club = () => {
-    /*const array = [1, 2, 3, 4, 5, 6, 7, 3, 1, 2, 1, 2, 3, 4, 5, 6, 7, 3, 1, 2];
-    const [golfers, setGolfers] = useState<GolferModel[]>();
     const graphQlClient = new GraphQLClient(
-        `https://norcross.stepzen.net/golfers/sheet/__graphql`,
-        {
-            headers: {
-                Authorization:
-                    "apikey norcross::stepzen.net+1000::cd1953dda138553df888616dabd088bc453eb0a030eaac6f7bb99ed7a94bb7a6",
-            },
-        },
+        "https://5rziby0p.api.sanity.io/v1/graphql/production/default",
     );
     const { data } = useGet_GolfersQuery(graphQlClient, {});
+    const { dancing, setDancing } = useStore();
+    const positions = useRef([[0, 0, 0]]);
     useEffect(() => {
-        const golferArray = [];
-        data &&
-            data.golfers
-                .filter((golfer) => golfer.attending__D === "Yes")
-                .forEach((golfer, index) => {
-                    const position = [
-                        (index % ROW_LENGTH) +
-                            (index % ROW_LENGTH) * 1.2 +
-                            Math.floor(Math.random() * (0.1 - -0.1 + 1) + -0.1),
-                        0,
-                        Math.floor(index / ROW_LENGTH) +
-                            Math.floor(index / ROW_LENGTH) * 1.2 +
-                            Math.floor(Math.random() * (0.1 - -0.1 + 1) + -0.1),
-                    ];
-                    const pose = Math.floor(Math.random() * POSES_AMOUNT);
-                    golferArray.push({ golfer, position, pose });
-                });
-        setGolfers(golferArray);
-    }, [data]);*/
+        if (data?.allGolfer) {
+            positions.current = data?.allGolfer.map((golfer, index) =>
+                getPosition(index),
+            );
+        }
+    }, [data]);
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
-            {/*<Canvas shadows camera={{ position: [1, 1.5, 15], fov: 50 }}>
+            <div
+                style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    zIndex: 999999,
+                    margin: "10px",
+                }}
+            >
+                <Button onClick={() => setDancing(!dancing ?? false)}>
+                    <p style={{ marginBottom: "5px" }}>{`Turn Music ${
+                        dancing ? "Off" : "On"
+                    }`}</p>
+                </Button>
+            </div>
+            <Canvas shadows camera={{ position: [1, 1.5, 15], fov: 50 }}>
                 <Suspense fallback={null}>
-                    <ambientLight intensity={0.5} />
-                    <spotLight position={[50, 50, -30]} castShadow />
-
-                    <pointLight position={[0, -5, 5]} intensity={0.5} />
+                    <pointLight position={[-10, 10, 5]} intensity={1} />
 
                     <group position={[0, -1, 0]}>
-                        {golfers &&
-                            golfers.map(({ golfer, position, pose }, index) => {
+                        {data?.allGolfer &&
+                            data?.allGolfer.map((golfer, index) => {
+                                console.log(
+                                    "getPosition(index) :>> ",
+                                    getPosition(index),
+                                );
                                 return (
                                     <Model
-                                        pose={pose}
-                                        position={position}
-                                        modelIndex={index}
-                                        golfer={golfer}
+                                        golferData={golfer}
+                                        position={positions.current[index]}
                                         key={`model ${index}`}
                                     />
                                 );
                             })}
-                        {/* <Model pose={0} position={[0, 0, 0]} />
-                        <Model pose={1} position={[1, 0, -1]} />
-                        <Model pose={0} position={[-1, 0, -1]} /> */}
-            {/*}
                     </group>
                     <mesh
                         rotation={[-0.5 * Math.PI, 0, 0]}
@@ -123,8 +123,8 @@ const Club = () => {
                         <shadowMaterial transparent opacity={0.2} />
                         <meshStandardMaterial color="#040314" />
                     </mesh>
-                    <Environment preset="warehouse" />
-                    <Light />
+                    <DanceLight dancing={dancing} />
+                    <RoomLight dancing={dancing} />
                     <Rig />
                     <OrbitControls
                         enablePan={true}
@@ -136,7 +136,7 @@ const Club = () => {
                         dispatchEvent={undefined}
                     />
                 </Suspense>
-                        </Canvas>*/}
+            </Canvas>
         </div>
     );
 };

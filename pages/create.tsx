@@ -20,43 +20,7 @@ import {
     useDisclosure,
     Button,
 } from "@chakra-ui/react";
-
-const graphQlClient = new GraphQLClient(
-    `https://norcross.stepzen.net/golfers/sheet/__graphql`,
-    {
-        headers: {
-            Authorization:
-                "apikey norcross::stepzen.net+1000::cd1953dda138553df888616dabd088bc453eb0a030eaac6f7bb99ed7a94bb7a6",
-        },
-    },
-);
-
-const mutation = gql`
-    mutation AddGolfers(
-        $secondName__A: String!
-        $firstName__B: String!
-        $year__C: String!
-        $attending__D: String!
-        $paid__E: String!
-        $tieNeeded__F: String!
-        $greenJacketOwner__G: String!
-        $tieColour__H: String!
-    ) {
-        addGolfers(
-            attending__D: $attending__D
-            firstName__B: $firstName__B
-            greenJacketOwner__G: $greenJacketOwner__G
-            paid__E: $paid__E
-            secondName__A: $secondName__A
-            tieColour__H: $tieColour__H
-            tieNeeded__F: $tieNeeded__F
-            year__C: $year__C
-        ) {
-            secondName__A
-            firstName__B
-        }
-    }
-`;
+import { DanceLight, RoomLight } from "@components/lights";
 
 function Rig() {
     const [vec] = useState(() => new THREE.Vector3());
@@ -86,48 +50,41 @@ function Rig() {
     );
 }
 
-function Light() {
-    const ref = useRef<{ rotation: { x: number } }>({ rotation: { x: 0 } });
-    useFrame((_) => ref && (ref.current.rotation.x = _.clock.elapsedTime));
-    return (
-        <group ref={ref}>
-            <rectAreaLight
-                width={15}
-                height={100}
-                position={[30, 30, -10]}
-                intensity={5}
-                onUpdate={(self) => self.lookAt(0, 0, 0)}
-            />
-        </group>
-    );
+function randomIntFromInterval(min: number, max: number) {
+    // min and max included
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 const Create = () => {
     const golfer = useStore();
-    const {
-        name,
-        year,
-        skinColour,
-        hairColour,
-        jacketColour,
-        shirtColour,
-        trouserColour,
-        shoeColour,
-        dancing,
-        favouriteMove,
-    } = useControls({ ...golfer.levaGolfer });
+
+    useControls(() => ({ ...golfer.levaGolfer }), []);
+    const { dancing, setDancing } = golfer;
     const { isOpen, onOpen, onClose } = useDisclosure();
-    console.log(`golfer`, golfer);
-    const { data } = useGet_GolfersQuery(graphQlClient, {});
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
+            <div
+                style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    zIndex: 999999,
+                    margin: "10px",
+                }}
+            >
+                <Button onClick={() => setDancing(!dancing ?? false)}>
+                    <p style={{ marginBottom: "5px" }}>{`Turn Music ${
+                        dancing ? "Off" : "On"
+                    }`}</p>
+                </Button>
+            </div>
             <Leva titleBar={{ title: "What am I like" }} />
             <Canvas shadows camera={{ position: [1, 0.5, 5], fov: 40 }}>
                 <Suspense fallback={null}>
-                    <ambientLight intensity={0.5} />
-                    <spotLight position={[50, 50, -30]} castShadow />
+                    {/* <ambientLight intensity={0.5} />
+                    <spotLight position={[50, 50, -30]} castShadow /> */}
 
-                    <pointLight position={[0, -5, 5]} intensity={0.5} />
+                    <pointLight position={[-10, 10, 5]} intensity={1} />
 
                     <group position={[0, -1, 0]}>
                         {golfer && <Model />}
@@ -145,8 +102,9 @@ const Create = () => {
                         <shadowMaterial transparent opacity={0.2} />
                         <meshStandardMaterial color="#040314" />
                     </mesh>
-                    <Environment preset="warehouse" />
-                    <Light />
+                    {/* <Environment preset="studio" /> */}
+                    <DanceLight dancing={dancing} />
+                    <RoomLight dancing={dancing} />
                     <Rig />
                     <OrbitControls
                         enablePan={false}

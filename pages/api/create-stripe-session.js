@@ -1,11 +1,11 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 async function CreateStripeSession(req, res) {
-    const { item } = req.body;
-    console.log(`item`, item);
+    const { items } = req.body;
+    console.log(`item`, items);
     const redirectURL = "http://localhost:3000";
 
-    const transformedItem = {
+    const transformedItems = items.map((item) => ({
         price_data: {
             currency: "gbp",
             product_data: {
@@ -16,17 +16,17 @@ async function CreateStripeSession(req, res) {
         },
         //description: item.description,
         quantity: item.quantity,
-    };
+    }));
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
-        line_items: [transformedItem],
+        line_items: transformedItems,
         mode: "payment",
         success_url: redirectURL + "?status=success",
         cancel_url: redirectURL + "?status=cancel",
-        metadata: {
+        /*metadata: {
             images: item.image,
-        },
+        },*/
     });
 
     res.json({ id: session.id });

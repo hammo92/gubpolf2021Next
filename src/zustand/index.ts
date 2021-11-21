@@ -1,23 +1,44 @@
 import create from "zustand";
 import { ModelProps, Golfer, LevaGolfer, Store } from "@interfaces/model";
-import { folder } from "leva";
+import { folder, button, buttonGroup } from "leva";
 import produce from "immer";
+import { Get_GolfersDocument } from "@generated/graphql";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
 
-export const useStore = create<Store>((set) => ({
+const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+);
+
+const createCheckOutSession = async (items) => {
+    const stripe = await stripePromise;
+    const checkoutSession = await axios.post("/api/create-stripe-session", {
+        items: items,
+    });
+    const result = await stripe.redirectToCheckout({
+        sessionId: checkoutSession.data.id,
+    });
+    if (result.error) {
+        alert(result.error.message);
+    }
+};
+
+export const useStore = create<Store>((set, get) => ({
     golfer: {
         name: "",
-        dancing: false,
-        favouriteMove: 4,
+        favouriteMove: 1,
+        idle: 5,
         hairColour: "black",
         jacketColour: "black",
-        modelIndex: 0,
-        needsTie: false,
+        tieNeeded: false,
         shirtColour: "white",
         shoeColour: "black",
         skinColour: "black",
         trouserColour: "black",
         year: 1,
     },
+    dancing: false,
+    setDancing: (value: boolean) => set((state) => (state.dancing = value)),
     levaGolfer: {
         name: {
             value: "",
@@ -42,8 +63,9 @@ export const useStore = create<Store>((set) => ({
                     }),
                 ),
         },
-        needsTie: {
+        tieNeeded: {
             options: {
+                "Select option": undefined,
                 Nope: false,
                 "Yeah (£10)": true,
             },
@@ -51,119 +73,166 @@ export const useStore = create<Store>((set) => ({
             onChange: (value: boolean) =>
                 set(
                     produce((state) => {
-                        state.golfer.needsTie = value;
+                        state.golfer.tieNeeded = value;
                     }),
                 ),
         },
-        dance: {
-            label: "Dance",
-            options: {
-                Nah: false,
-                "Let's go": true,
-            },
-            onChange: (value: boolean) =>
-                set(
-                    produce((state) => {
-                        state.golfer.dancing = value;
-                    }),
+        Personalise: folder(
+            {
+                Body: folder(
+                    {
+                        skinColour: {
+                            value: "#ffffff",
+                            label: "Skin Colour",
+                            onChange: (value: string) =>
+                                set(
+                                    produce((state) => {
+                                        state.golfer.skinColour = value;
+                                    }),
+                                ),
+                        },
+                        hairColour: {
+                            value: "#000000",
+                            label: "Hair Colour",
+                            onChange: (value: string) =>
+                                set(
+                                    produce((state) => {
+                                        state.golfer.hairColour = value;
+                                    }),
+                                ),
+                        },
+                    },
+                    {
+                        collapsed: true,
+                    },
                 ),
-        },
-        Body: folder({
-            skinColour: {
-                value: "#ffffff",
-                label: "Skin Colour",
-                onChange: (value: string) =>
-                    set(
-                        produce((state) => {
-                            state.golfer.skinColour = value;
-                        }),
-                    ),
+                Clothes: folder(
+                    {
+                        jacketColour: {
+                            value: "#000000",
+                            label: "Jacket Colour",
+                            onChange: (value: string) =>
+                                set(
+                                    produce((state) => {
+                                        state.golfer.jacketColour = value;
+                                    }),
+                                ),
+                        },
+                        shirtColour: {
+                            value: "#ffffff",
+                            label: "Shirt Colour",
+                            onChange: (value: string) =>
+                                set(
+                                    produce((state) => {
+                                        state.golfer.shirtColour = value;
+                                    }),
+                                ),
+                        },
+                        trouserColour: {
+                            value: "#000000",
+                            label: "Trouser Colour",
+                            onChange: (value: string) =>
+                                set(
+                                    produce((state) => {
+                                        state.golfer.trouserColour = value;
+                                    }),
+                                ),
+                        },
+                        shoeColour: {
+                            value: "#000000",
+                            label: "Shoe Colour",
+                            onChange: (value: string) =>
+                                set(
+                                    produce((state) => {
+                                        state.golfer.shoeColour = value;
+                                    }),
+                                ),
+                        },
+                    },
+                    {
+                        collapsed: true,
+                    },
+                ),
             },
-            hairColour: {
-                value: "#000000",
-                label: "Hair Colour",
-                onChange: (value: string) =>
-                    set(
-                        produce((state) => {
-                            state.golfer.hairColour = value;
-                        }),
-                    ),
+            {
+                collapsed: true,
+                render: (get) => get("name") && get("tieNeeded") !== undefined,
             },
-        }),
-        Clothes: folder({
-            jacketColour: {
-                value: "#000000",
-                label: "Jacket Colour",
-                onChange: (value: string) =>
-                    set(
-                        produce((state) => {
-                            state.golfer.jacketColour = value;
-                        }),
-                    ),
-            },
-            shirtColour: {
-                value: "#ffffff",
-                label: "Shirt Colour",
-                onChange: (value: string) =>
-                    set(
-                        produce((state) => {
-                            state.golfer.shirtColour = value;
-                        }),
-                    ),
-            },
-            trouserColour: {
-                value: "#000000",
-                label: "Trouser Colour",
-                onChange: (value: string) =>
-                    set(
-                        produce((state) => {
-                            state.golfer.trouserColour = value;
-                        }),
-                    ),
-            },
-            shoeColour: {
-                value: "#000000",
-                label: "Shoe Colour",
-                onChange: (value: string) =>
-                    set(
-                        produce((state) => {
-                            state.golfer.shoeColour = value;
-                        }),
-                    ),
-            },
-        }),
-        Moves: folder({
-            idle: {
-                label: "Idle",
-                options: {
-                    Chill: 0,
-                    Chilll: 2,
-                    Chillll: 3,
+        ),
+
+        Moves: folder(
+            {
+                idle: {
+                    label: "Idle",
+                    options: {
+                        Bored: 1,
+                        "Keep Warm": 6,
+                        "Feeling it": 4,
+                        "Not My Tune": 10,
+                    },
+                    onChange: (value: number) =>
+                        set(
+                            produce((state) => {
+                                state.golfer.idle = value;
+                            }),
+                        ),
                 },
-                onChange: (value: number) =>
-                    set(
-                        produce((state) => {
-                            state.golfer.idle = value;
-                        }),
-                    ),
-            },
-            favouriteMove: {
-                label: "Signature Move",
-                options: {
-                    "Slept On My Arms": 1,
-                    Breakdown: 4,
-                    "Pop and Lock": 5,
-                    "Basic Boogie": 6,
-                    "Twerk to werk": 7,
+                favouriteMove: {
+                    label: "Signature Move",
+                    options: {
+                        "Snake Charmer": 0,
+                        "Stir It Up": 2,
+                        "Dead Arms": 3,
+                        Throwback: 5,
+                        Cokey: 7,
+                        "Throw Away The Key": 9,
+                        Eyyyy: 11,
+                        "Just Watch Me": 12,
+                        "What Mama Gave Ya": 13,
+                    },
+                    onChange: (value: number) =>
+                        set(
+                            produce((state) => {
+                                state.golfer.favouriteMove = value;
+                            }),
+                        ),
                 },
-                onChange: (value: number) =>
-                    set(
-                        produce((state) => {
-                            state.golfer.favouriteMove = value;
-                        }),
-                    ),
             },
-        }),
+            {
+                collapsed: true,
+                render: (get) => get("name") && get("tieNeeded") !== undefined,
+            },
+        ),
+        Payment: folder(
+            {
+                "Do it": button(async () => {
+                    /*const items = [];
+                    const tieNeeded = get().golfer.tieNeeded;
+                    const greenFee = {
+                        name: "Green Fee",
+                        price: 15,
+                        quantity: 1,
+                        description: "stash fund",
+                    };
+                    const tie = {
+                        name: "Tie Purchase",
+                        price: 10,
+                        quantity: 1,
+                        description: "Keep it tidy",
+                    };
+                    items.push(greenFee);
+                    tieNeeded && items.push(tie);
+                    const session = createCheckOutSession(items);*/
+                    const golfer = await axios.post("/api/create-golfer", {
+                        golfer: get().golfer,
+                    });
+                    console.log(`golfer`, golfer);
+                }),
+            },
+            {
+                render: (get) => get("name") && get("tieNeeded") !== undefined,
+            },
+        ),
     },
 
     //setGolfer: (golfer: Golfer) => set({ golfer }),

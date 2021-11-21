@@ -11,7 +11,7 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"; 
-    background: #ffb6c1;
+    background: #282831 !important;
   }
   #__next::after {
     content: '';
@@ -20,7 +20,7 @@ const GlobalStyle = createGlobalStyle`
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/view.svg');
+  ${"" /* background-image: url('/view.svg'); */}
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;

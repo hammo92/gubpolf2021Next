@@ -12,5 +12,7 @@ query GET_GOLFERS {
         tieNeeded
         attending
         paid
+        idle
+        favouriteMove
     }
 }

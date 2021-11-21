@@ -183,6 +183,8 @@ export type Golfer = Document & {
   trouserColour?: Maybe<Scalars['String']>;
   tieColour?: Maybe<Scalars['String']>;
   shoeColour?: Maybe<Scalars['String']>;
+  idle?: Maybe<Scalars['Float']>;
+  favouriteMove?: Maybe<Scalars['Float']>;
 };
 
 export type GolferFilter = {
@@ -206,6 +208,8 @@ export type GolferFilter = {
   trouserColour?: Maybe<StringFilter>;
   tieColour?: Maybe<StringFilter>;
   shoeColour?: Maybe<StringFilter>;
+  idle?: Maybe<FloatFilter>;
+  favouriteMove?: Maybe<FloatFilter>;
 };
 
 export type GolferSorting = {
@@ -227,6 +231,8 @@ export type GolferSorting = {
   trouserColour?: Maybe<SortOrder>;
   tieColour?: Maybe<SortOrder>;
   shoeColour?: Maybe<SortOrder>;
+  idle?: Maybe<SortOrder>;
+  favouriteMove?: Maybe<SortOrder>;
 };
 
 export type IdFilter = {
@@ -763,7 +769,7 @@ export type StringFilter = {
 export type Get_GolfersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Get_GolfersQuery = { __typename?: 'RootQuery', allGolfer: Array<{ __typename?: 'Golfer', name?: string | null | undefined, year?: number | null | undefined, shoeColour?: string | null | undefined, tieColour?: string | null | undefined, trouserColour?: string | null | undefined, shirtColour?: string | null | undefined, jacketColour?: string | null | undefined, hairColour?: string | null | undefined, greenJacketOwner?: boolean | null | undefined, tieNeeded?: boolean | null | undefined, attending?: boolean | null | undefined, paid?: boolean | null | undefined }> };
+export type Get_GolfersQuery = { __typename?: 'RootQuery', allGolfer: Array<{ __typename?: 'Golfer', name?: string | null | undefined, year?: number | null | undefined, shoeColour?: string | null | undefined, tieColour?: string | null | undefined, trouserColour?: string | null | undefined, shirtColour?: string | null | undefined, jacketColour?: string | null | undefined, hairColour?: string | null | undefined, greenJacketOwner?: boolean | null | undefined, tieNeeded?: boolean | null | undefined, attending?: boolean | null | undefined, paid?: boolean | null | undefined, idle?: number | null | undefined, favouriteMove?: number | null | undefined }> };
 
 
 export const Get_GolfersDocument = `
@@ -781,6 +787,8 @@ export const Get_GolfersDocument = `
     tieNeeded
     attending
     paid
+    idle
+    favouriteMove
   }
 }
     `;

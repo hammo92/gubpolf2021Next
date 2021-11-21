@@ -17,9 +17,10 @@ import {
 import { useGraph } from "@react-three/fiber";
 import { a, useSpring } from "@react-spring/three";
 import { SkeletonUtils } from "three-stdlib";
-import { Golfer, LeviaInput } from "@interfaces/model";
+
 import { SkinnedMesh } from "./skinnedMesh";
 import { useStore } from "src/zustand";
+import { Golfer } from "@interfaces/model";
 const hiddenNodes = ["Ch33_Eyelashes", "Ch33_Belt"];
 const nonTextured = [
     "Ch33_Tie",
@@ -106,7 +107,11 @@ const NameCard: React.FC<{ name: string }> = ({ name }) => (
     </group>
 );
 
-export const Model: React.FC = () => {
+export const Model: React.FC<{ golferData: Golfer; position: number[] }> = ({
+    golferData,
+    position,
+}) => {
+    console.log(`golferData`, golferData);
     const golfer = useStore();
     const {
         name,
@@ -117,12 +122,12 @@ export const Model: React.FC = () => {
         shirtColour = "#ffffff",
         trouserColour = "#000000",
         shoeColour = "#000000",
-        dancing = false,
         favouriteMove = 4,
         idle = 0,
-    } = golfer.golfer;
+    } = golferData ?? golfer.golfer;
+    const { dancing = false } = golfer;
     // Fetch model and a separate texture
-    const { scene, animations } = useGLTF("/drunkManCompressed.gltf");
+    const { scene, animations } = useGLTF("/drunkManAllMoves.gltf");
     const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
     const { nodes } = useGraph(clone);
     const textures = [
@@ -134,16 +139,13 @@ export const Model: React.FC = () => {
     // Hover and animation-index states
     const [hovered, setHovered] = useState(false);
     const [index, setIndex] = useState(0);
-    console.log(`golfer`, golfer);
     useEffect(() => {
-        console.log(`trigger`);
         dancing ? setIndex(favouriteMove) : setIndex(idle);
     }, [dancing, favouriteMove, idle]);
     // Animate the selection halo
     const { color } = useSpring({
         color: hovered ? "hotpink" : "aquamarine",
     });
-    console.log(`index`, index);
 
     const setColor = (key: string | undefined): string | undefined => {
         if (key === "Ch33_Tie") return getTieColour(year);
@@ -161,7 +163,6 @@ export const Model: React.FC = () => {
     // Change animation when the index changes
 
     useEffect(() => {
-        console.log(`index`, index);
         // Reset and fade in animation after an index has been changed
         actions[names[index]]?.reset().fadeIn(0.5).play();
         // In the clean-up phase, fade it out
@@ -170,7 +171,7 @@ export const Model: React.FC = () => {
         };
     }, [index, actions, names]);
     return (
-        <group ref={ref} dispose={null}>
+        <group ref={ref} dispose={null} position={position}>
             <group rotation={[Math.PI / 2, 0, 0]} scale={[0.01, 0.01, 0.01]}>
                 <primitive object={nodes.mixamorig7Hips} />
                 {Object.keys(nodes).map((nodeKey) => {
