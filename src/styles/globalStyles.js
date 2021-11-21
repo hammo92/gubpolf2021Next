@@ -26,6 +26,9 @@ const GlobalStyle = createGlobalStyle`
   background-size: contain;
   pointer-events: none;
   }
+  select{
+    background: #292d39
+  }
 `;
 
 export default GlobalStyle;
