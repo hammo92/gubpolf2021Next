@@ -46,14 +46,14 @@ function randomIntFromInterval(min: number, max: number) {
 const Create = () => {
     const golfer = useStore();
     useControls(() => ({ ...golfer.levaGolfer }), []);
-    const { dancing, setDancing } = golfer;
+    const { dancing, setDancing, setAudio, audio } = golfer;
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
         <>
             <div style={{ width: "100vw", height: "100vh" }}>
                 <div
                     style={{
-                        position: "absolute",
+                        position: "fixed",
                         left: 0,
                         top: 0,
                         zIndex: 9,
@@ -61,7 +61,10 @@ const Create = () => {
                     }}
                 >
                     <Button
-                        onClick={() => setDancing(!dancing ?? false)}
+                        onClick={async () => {
+                            !audio && (await setAudio());
+                            setDancing(!dancing ?? false);
+                        }}
                         colorScheme="teal"
                     >
                         <p style={{ marginBottom: "0px" }}>{`Turn Music ${
@@ -69,7 +72,7 @@ const Create = () => {
                         }`}</p>
                     </Button>
                 </div>
-                <Leva titleBar={{ title: "What am I like" }} />
+                <Leva />
                 <Canvas shadows camera={{ position: [1, 0.5, 10], fov: 25 }}>
                     <Suspense fallback={null}>
                         {/* <ambientLight intensity={0.5} />
@@ -110,8 +113,8 @@ const Create = () => {
                     </Suspense>
                     <fogExp2 attach="fog" color="black" density={0.02} />
                 </Canvas>
-                <Loader />
             </div>
+            <Loader />
         </>
     );
 };

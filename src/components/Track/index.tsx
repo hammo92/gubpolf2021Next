@@ -2,28 +2,34 @@ import * as THREE from "three";
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useAsset } from "use-asset";
+import { useStore } from "src/zustand";
 
 export const TrackAndZoom: React.FC<{ playing: boolean }> = ({
     playing = false,
 }) => {
+    const { audio, setAudio } = useStore();
     return (
         <Suspense fallback={null}>
-            <Track
-                url="/September.mp3"
-                position-z={-20}
-                y={40}
-                height={15}
-                width={10}
-                space={1.5}
-                playing={playing}
-            />
-            <Zoom url="/September.mp3" />
+            {audio && (
+                <>
+                    <Track
+                        audio={audio}
+                        position-z={-20}
+                        y={40}
+                        height={15}
+                        width={10}
+                        space={1.5}
+                        playing={playing}
+                    />
+                    <Zoom url="/September.mp3" />
+                </>
+            )}
         </Suspense>
     );
 };
 
 interface TrackProps {
-    url: string;
+    audio: unknown;
     y?: number;
     space?: number;
     width?: number;
@@ -33,7 +39,7 @@ interface TrackProps {
 }
 
 export const Track: React.FC<TrackProps> = ({
-    url,
+    audio,
     y = 2500,
     space = 1.8,
     width = 0.01,
@@ -45,10 +51,7 @@ export const Track: React.FC<TrackProps> = ({
     const ref = useRef();
     // use-asset is the library that r3f uses internally for useLoader. It caches promises and
     // integrates them with React suspense. You can use it as-is with or without r3f.
-    const { gain, context, update, data } = useAsset(
-        () => createAudio(url),
-        url,
-    );
+    const { gain, context, update, data } = audio;
 
     const barDimensions = playing ? [width, height, 5] : [0, 0, 0];
     useEffect(() => {
@@ -75,15 +78,17 @@ export const Track: React.FC<TrackProps> = ({
         ref.current.instanceMatrix.needsUpdate = true;
     });
     return (
-        <instancedMesh
-            castShadow
-            ref={ref}
-            args={[null, null, data.length]}
-            {...props}
-        >
-            <boxGeometry args={barDimensions} />
-            <meshBasicMaterial toneMapped={false} />
-        </instancedMesh>
+        <>
+            <instancedMesh
+                castShadow
+                ref={ref}
+                args={[null, null, data.length]}
+                {...props}
+            >
+                <boxGeometry args={barDimensions} />
+                <meshBasicMaterial toneMapped={false} />
+            </instancedMesh>
+        </>
     );
 };
 
@@ -101,7 +106,7 @@ const Zoom: React.FC<{ url: string; playing: boolean }> = ({
     });
 };
 
-async function createAudio(url) {
+export async function createAudio(url) {
     // Fetch audio data and create a buffer source
 
     const res = await fetch(url);

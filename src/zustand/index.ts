@@ -5,6 +5,7 @@ import produce from "immer";
 import { Get_GolfersDocument } from "@generated/graphql";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
+import { createAudio } from "@components/Track";
 
 const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
@@ -39,7 +40,11 @@ export const useStore = create<Store>((set, get) => ({
         trouserColour: "black",
         year: 1,
     },
-    stripeSessionId: "",
+    audio: undefined,
+    setAudio: async () => {
+        const audio = await createAudio("/September.mp3");
+        set((state) => (state.audio = audio));
+    },
     dancing: false,
     setDancing: (value: boolean) => set((state) => (state.dancing = value)),
     levaGolfer: {
