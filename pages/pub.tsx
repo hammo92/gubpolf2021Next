@@ -88,7 +88,7 @@ const Club = () => {
                     }`}</p>
                 </Button>
             </div>
-            <Canvas shadows camera={{ position: [1, 1.5, 15], fov: 25 }}>
+            <Canvas shadows camera={{ position: [15, 1.5, 10], fov: 25 }}>
                 <Suspense fallback={null}>
                     {/* <Track
                         url="/September.mp3"
@@ -99,8 +99,9 @@ const Club = () => {
                         space={1.2}
                     />
                     <Zoom url="/September.mp3" /> */}
-                    {dancing && <TrackAndZoom />}
-                    <pointLight position={[-10, 10, 5]} intensity={1} />
+                    <TrackAndZoom playing={dancing} />
+
+                    <pointLight position={[0, 10, 10]} intensity={1} />
 
                     <group position={[0, -1, 0]}>
                         {data?.allGolfer &&

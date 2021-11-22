@@ -3,7 +3,9 @@ import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useAsset } from "use-asset";
 
-export const TrackAndZoom = (props) => {
+export const TrackAndZoom: React.FC<{ playing: boolean }> = ({
+    playing = false,
+}) => {
     return (
         <Suspense fallback={null}>
             <Track
@@ -13,6 +15,7 @@ export const TrackAndZoom = (props) => {
                 height={15}
                 width={10}
                 space={1.5}
+                playing={playing}
             />
             <Zoom url="/September.mp3" />
         </Suspense>
@@ -26,6 +29,7 @@ interface TrackProps {
     width?: number;
     height?: number;
     obj?: THREE.Object3D;
+    playing?: boolean;
 }
 
 export const Track: React.FC<TrackProps> = ({
@@ -35,6 +39,7 @@ export const Track: React.FC<TrackProps> = ({
     width = 0.01,
     height = 0.05,
     obj = new THREE.Object3D(),
+    playing = false,
     ...props
 }) => {
     const ref = useRef();
@@ -44,15 +49,17 @@ export const Track: React.FC<TrackProps> = ({
         () => createAudio(url),
         url,
     );
+
+    const barDimensions = playing ? [width, height, 5] : [0, 0, 0];
     useEffect(() => {
         // Connect the gain node, which plays the audio
-        gain.connect(context.destination);
+        playing ? gain.connect(context.destination) : gain.disconnect();
         // Disconnect it on unmount
         return () => gain.disconnect();
-    }, [gain, context]);
+    }, [gain, context, playing]);
 
     useFrame((state) => {
-        let avg = update();
+        const avg = update();
         // Distribute the instanced planes according to the frequency daza
         for (let i = 0; i < data.length; i++) {
             obj.position.set(
@@ -74,19 +81,22 @@ export const Track: React.FC<TrackProps> = ({
             args={[null, null, data.length]}
             {...props}
         >
-            <boxGeometry args={[width, height, 5]} />
+            <boxGeometry args={barDimensions} />
             <meshBasicMaterial toneMapped={false} />
         </instancedMesh>
     );
 };
 
-const Zoom: React.FC<{ url: string }> = ({ url }) => {
+const Zoom: React.FC<{ url: string; playing: boolean }> = ({
+    url,
+    playing = false,
+}) => {
     // This will *not* re-create a new audio source, suspense is always cached,
     // so this will just access (or create and then cache) the source according to the url
     const { data } = useAsset(() => createAudio(url), url);
     return useFrame((state) => {
         // Set the cameras field of view according to the frequency average
-        state.camera.fov = 25 - data.avg / 100;
+        state.camera.fov = 25 - (playing ? data.avg / 100 : 0);
         state.camera.updateProjectionMatrix();
     });
 };

@@ -74,7 +74,7 @@ const Create = () => {
                     <Suspense fallback={null}>
                         {/* <ambientLight intensity={0.5} />
                     <spotLight position={[50, 50, -30]} castShadow /> */}
-                        {dancing && <TrackAndZoom />}
+                        <TrackAndZoom playing={dancing} />
 
                         <pointLight position={[-10, 10, 5]} intensity={1} />
 
