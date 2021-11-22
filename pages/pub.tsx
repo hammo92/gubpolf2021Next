@@ -91,7 +91,7 @@ const Club = () => {
                     }`}</p>
                 </Button>
             </div>
-            <Canvas shadows camera={{ position: [15, 1.5, 10], fov: 25 }}>
+            <Canvas shadows camera={{ position: [20, 10, 15], fov: 25 }}>
                 <Suspense fallback={null}>
                     {/* <Track
                         url="/September.mp3"
