@@ -90,7 +90,7 @@ const NameCard: React.FC<{ name: string }> = ({ name }) => (
             <Html distanceFactor={10} zIndexRange={[100, 0]}>
                 <Box position="relative">
                     <Box
-                        background="#dedede"
+                        background="#40404f"
                         p={10}
                         position="relative"
                         left="-50%"

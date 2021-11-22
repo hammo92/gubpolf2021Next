@@ -8,6 +8,7 @@ import React, { Suspense, useState } from "react";
 import { useStore } from "src/zustand";
 import * as THREE from "three";
 import { useWindowSize } from "react-use";
+import { TrackAndZoom } from "@components/Track";
 
 function Rig() {
     const [vec] = useState(() => new THREE.Vector3());
@@ -59,17 +60,21 @@ const Create = () => {
                         margin: "10px",
                     }}
                 >
-                    <Button onClick={() => setDancing(!dancing ?? false)}>
-                        <p style={{ marginBottom: "5px" }}>{`Turn Music ${
+                    <Button
+                        onClick={() => setDancing(!dancing ?? false)}
+                        colorScheme="teal"
+                    >
+                        <p style={{ marginBottom: "0px" }}>{`Turn Music ${
                             dancing ? "Off" : "On"
                         }`}</p>
                     </Button>
                 </div>
                 <Leva titleBar={{ title: "What am I like" }} />
-                <Canvas shadows camera={{ position: [1, 0.5, 5], fov: 40 }}>
+                <Canvas shadows camera={{ position: [1, 0.5, 10], fov: 25 }}>
                     <Suspense fallback={null}>
                         {/* <ambientLight intensity={0.5} />
                     <spotLight position={[50, 50, -30]} castShadow /> */}
+                        {dancing && <TrackAndZoom />}
 
                         <pointLight position={[-10, 10, 5]} intensity={1} />
 
@@ -94,8 +99,8 @@ const Create = () => {
                         <RoomLight dancing={dancing} />
                         <Rig />
                         <OrbitControls
-                            enablePan={false}
-                            enableZoom={false}
+                            enablePan={true}
+                            enableZoom={true}
                             enableRotate={true}
                             addEventListener={undefined}
                             hasEventListener={undefined}
@@ -103,6 +108,7 @@ const Create = () => {
                             dispatchEvent={undefined}
                         />
                     </Suspense>
+                    <fogExp2 attach="fog" color="black" density={0.02} />
                 </Canvas>
                 <Loader />
             </div>

@@ -17,6 +17,9 @@ const overrides = {
     ...styles,
     colors,
     fontSizes,
+    config: {
+        initialColorMode: "dark",
+    },
 };
 
 const theme = extendTheme(overrides);

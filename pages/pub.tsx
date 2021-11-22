@@ -3,11 +3,13 @@ import * as THREE from "three";
 import React, { Suspense, useState, useRef, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Model } from "@components/model";
+import { Track, Zoom, TrackAndZoom } from "@components/Track";
 import {
     OrbitControls,
     CameraShake,
     Environment,
     Loader,
+    PerspectiveCamera,
 } from "@react-three/drei";
 import { GraphQLClient } from "graphql-request";
 import { useGet_GolfersQuery } from "@generated/graphql";
@@ -20,11 +22,10 @@ const POSES_AMOUNT = 7;
 function Rig() {
     const [vec] = useState(() => new THREE.Vector3());
     const { camera, mouse } = useThree();
+    console.log("camera :>> ", camera);
     camera.rotation.x = -0.5;
     camera.rotation.y = 0.4;
     camera.rotation.z = 0.2;
-
-    //useFrame(() => camera.rotation.lerp(vec.set(mouse.x * 1, 0, 0), 0.05));
     return (
         <>
             <CameraShake
@@ -36,22 +37,6 @@ function Rig() {
                 rollFrequency={0.4}
             />
         </>
-    );
-}
-
-function Light() {
-    const ref = useRef<{ rotation: { x: number } }>();
-    useFrame((_) => ref && (ref.current.rotation.x = _.clock.elapsedTime));
-    return (
-        <group ref={ref}>
-            <rectAreaLight
-                width={15}
-                height={100}
-                position={[30, 30, -10]}
-                intensity={5}
-                onUpdate={(self) => self.lookAt(0, 0, 0)}
-            />
-        </group>
     );
 }
 
@@ -94,14 +79,27 @@ const Club = () => {
                     margin: "10px",
                 }}
             >
-                <Button onClick={() => setDancing(!dancing ?? false)}>
-                    <p style={{ marginBottom: "5px" }}>{`Turn Music ${
+                <Button
+                    onClick={() => setDancing(!dancing ?? false)}
+                    colorScheme="teal"
+                >
+                    <p style={{ marginBottom: "0px" }}>{`Turn Music ${
                         dancing ? "Off" : "On"
                     }`}</p>
                 </Button>
             </div>
-            <Canvas shadows camera={{ position: [1, 1.5, 15], fov: 50 }}>
+            <Canvas shadows camera={{ position: [1, 1.5, 15], fov: 25 }}>
                 <Suspense fallback={null}>
+                    {/* <Track
+                        url="/September.mp3"
+                        position-z={-50}
+                        y={10}
+                        height={30}
+                        width={10}
+                        space={1.2}
+                    />
+                    <Zoom url="/September.mp3" /> */}
+                    {dancing && <TrackAndZoom />}
                     <pointLight position={[-10, 10, 5]} intensity={1} />
 
                     <group position={[0, -1, 0]}>
@@ -125,7 +123,7 @@ const Club = () => {
                         position={[0, -1, 0]}
                         receiveShadow
                     >
-                        <planeBufferGeometry args={[150, 50, 1, 1]} />
+                        <planeBufferGeometry args={[500, 500, 1, 1]} />
                         <shadowMaterial transparent opacity={0.2} />
                         <meshStandardMaterial color="#040314" />
                     </mesh>
@@ -142,6 +140,7 @@ const Club = () => {
                         dispatchEvent={undefined}
                     />
                 </Suspense>
+                <fogExp2 attach="fog" color="black" density={0.005} />
             </Canvas>
             <Loader />
         </div>

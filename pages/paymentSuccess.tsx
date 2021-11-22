@@ -23,8 +23,9 @@ const PaymentSuccess: React.FC = () => {
                         stripeSessionId,
                         golfer: JSON.parse(golfer),
                     });
-                    add.status === 200 &&
-                        localStorage.removeItem(stripeSessionId);
+
+                    localStorage.removeItem("stripeSessionId");
+                    console.log("removed");
                     setGolferAdded(true);
                 })();
             }
@@ -32,7 +33,6 @@ const PaymentSuccess: React.FC = () => {
             setGolferAdded(true);
         }
     }, []);
-    console.log("golfer :>> ", golfer);
     return (
         <Box
             width="100vw"
@@ -54,7 +54,10 @@ const PaymentSuccess: React.FC = () => {
                     <Text fontSize="3xl" color="#ffffff">
                         You're on the list, enter the pub
                     </Text>
-                    <Button onClick={() => router.push("/pub")}>
+                    <Button
+                        onClick={() => router.push("/pub")}
+                        colorScheme="teal"
+                    >
                         Enter the Pub
                     </Button>
                 </Flex>
