@@ -199,8 +199,8 @@ export const useStore = create<Store>((set, get) => ({
                         ),
                 },
                 favouriteMove: {
-                    label: "Signature Move",
-                    hint: "Don't hold back",
+                    label: "Dancing",
+                    hint: "Don't hold back, set music to on!",
                     options: {
                         "Snake Charmer": 0,
                         "Stir It Up": 2,

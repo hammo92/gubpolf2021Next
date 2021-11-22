@@ -15,6 +15,7 @@ import { GraphQLClient } from "graphql-request";
 import { useGet_GolfersQuery } from "@generated/graphql";
 import { DanceLight, RoomLight } from "@components/lights";
 import { useStore } from "src/zustand";
+import { DanceButton } from "@components/danceButton";
 
 const ROW_LENGTH = 16;
 const POSES_AMOUNT = 7;
@@ -70,27 +71,7 @@ const Club = () => {
     }, [data]);
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
-            <div
-                style={{
-                    position: "absolute",
-                    left: 0,
-                    top: 0,
-                    zIndex: 9,
-                    margin: "10px",
-                }}
-            >
-                <Button
-                    onClick={async () => {
-                        !audio && (await setAudio());
-                        setDancing(!dancing ?? false);
-                    }}
-                    colorScheme="teal"
-                >
-                    <p style={{ marginBottom: "0px" }}>{`Turn Music ${
-                        dancing ? "Off" : "On"
-                    }`}</p>
-                </Button>
-            </div>
+            <DanceButton />
             <Canvas shadows camera={{ position: [20, 10, 15], fov: 25 }}>
                 <Suspense fallback={null}>
                     {/* <Track

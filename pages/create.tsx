@@ -9,6 +9,7 @@ import { useStore } from "src/zustand";
 import * as THREE from "three";
 import { useWindowSize } from "react-use";
 import { TrackAndZoom } from "@components/Track";
+import { DanceButton } from "@components/danceButton";
 
 function Rig() {
     const [vec] = useState(() => new THREE.Vector3());
@@ -47,31 +48,12 @@ const Create = () => {
     const golfer = useStore();
     useControls(() => ({ ...golfer.levaGolfer }), []);
     const { dancing, setDancing, setAudio, audio } = golfer;
+    const [loading, setLoading] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
         <>
             <div style={{ width: "100vw", height: "100vh" }}>
-                <div
-                    style={{
-                        position: "fixed",
-                        left: 0,
-                        top: 0,
-                        zIndex: 9,
-                        margin: "10px",
-                    }}
-                >
-                    <Button
-                        onClick={async () => {
-                            !audio && (await setAudio());
-                            setDancing(!dancing ?? false);
-                        }}
-                        colorScheme="teal"
-                    >
-                        <p style={{ marginBottom: "0px" }}>{`Turn Music ${
-                            dancing ? "Off" : "On"
-                        }`}</p>
-                    </Button>
-                </div>
+                <DanceButton />
                 <Leva />
                 <Canvas shadows camera={{ position: [1, 0.5, 10], fov: 25 }}>
                     <Suspense fallback={null}>
