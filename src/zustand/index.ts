@@ -233,7 +233,7 @@ export const useStore = create<Store>((set, get) => ({
                     const tieNeeded = get().golfer.tieNeeded;
                     const greenFee = {
                         name: "Green Fee",
-                        price: 15,
+                        price: 20,
                         quantity: 1,
                         description: "stash fund",
                     };
