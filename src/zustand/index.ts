@@ -48,46 +48,48 @@ export const useStore = create<Store>((set, get) => ({
     dancing: false,
     setDancing: (value: boolean) => set((state) => (state.dancing = value)),
     levaGolfer: {
-        name: {
-            value: "",
-            label: "Name",
-            hint: "You can't really need more help with this one",
-            onChange: (value: string) =>
-                set(
-                    produce((state) => {
-                        state.golfer.name = value;
-                    }),
-                ),
-        },
-        year: {
-            value: 0,
-            label: "Year",
-            hint: "Your year, take the year you started at bishops and remove 2 (03 becomes 1)",
-            min: -1,
-            max: 12,
-            step: 1,
-            onChange: (value: number) =>
-                set(
-                    produce((state) => {
-                        state.golfer.year = value;
-                    }),
-                ),
-        },
-        tieNeeded: {
-            options: {
-                "Select option": undefined,
-                Nope: false,
-                "Yeah (£10)": true,
+        Basics: folder({
+            name: {
+                value: "",
+                label: "Name",
+                hint: "You can't really need help with this one",
+                onChange: (value: string) =>
+                    set(
+                        produce((state) => {
+                            state.golfer.name = value;
+                        }),
+                    ),
             },
-            hint: "Have you got a tie or do you need to buy one",
-            label: "Buy a Tie",
-            onChange: (value: boolean) =>
-                set(
-                    produce((state) => {
-                        state.golfer.tieNeeded = value;
-                    }),
-                ),
-        },
+            year: {
+                value: 0,
+                label: "Year",
+                hint: "Your year, take the year you started at bishops and remove 2 (03 becomes 1)",
+                min: -1,
+                max: 12,
+                step: 1,
+                onChange: (value: number) =>
+                    set(
+                        produce((state) => {
+                            state.golfer.year = value;
+                        }),
+                    ),
+            },
+            tieNeeded: {
+                options: {
+                    "Select option": undefined,
+                    Nope: false,
+                    "Yeah (£10)": true,
+                },
+                hint: "Have you got a tie or do you need to buy one",
+                label: "Buy a Tie",
+                onChange: (value: boolean) =>
+                    set(
+                        produce((state) => {
+                            state.golfer.tieNeeded = value;
+                        }),
+                    ),
+            },
+        }),
         Personalise: folder(
             {
                 Body: folder(
@@ -106,7 +108,7 @@ export const useStore = create<Store>((set, get) => ({
                         hairColour: {
                             value: "#000000",
                             label: "Hair Colour",
-                            hint: "How SJW are you?",
+                            hint: "Go wild",
                             onChange: (value: string) =>
                                 set(
                                     produce((state) => {
@@ -173,7 +175,8 @@ export const useStore = create<Store>((set, get) => ({
             },
             {
                 collapsed: true,
-                render: (get) => get("name") && get("tieNeeded") !== undefined,
+                render: (get) =>
+                    get("Basics.name") && get("Basics.tieNeeded") !== undefined,
             },
         ),
 
@@ -201,13 +204,13 @@ export const useStore = create<Store>((set, get) => ({
                     options: {
                         "Snake Charmer": 0,
                         "Stir It Up": 2,
-                        "Dead Arms": 3,
+                        "Personal Space": 3,
                         Throwback: 5,
                         Cokey: 7,
                         "Throw Away The Key": 9,
                         Eyyyy: 11,
                         "Just Watch Me": 12,
-                        "What Mama Gave Ya": 13,
+                        "What Mama Gave Me": 13,
                     },
                     onChange: (value: number) =>
                         set(
@@ -219,7 +222,8 @@ export const useStore = create<Store>((set, get) => ({
             },
             {
                 collapsed: true,
-                render: (get) => get("name") && get("tieNeeded") !== undefined,
+                render: (get) =>
+                    get("Basics.name") && get("Basics.tieNeeded") !== undefined,
             },
         ),
         Payment: folder(
@@ -249,7 +253,8 @@ export const useStore = create<Store>((set, get) => ({
                 }),
             },
             {
-                render: (get) => get("name") && get("tieNeeded") !== undefined,
+                render: (get) =>
+                    get("Basics.name") && get("Basics.tieNeeded") !== undefined,
             },
         ),
     },

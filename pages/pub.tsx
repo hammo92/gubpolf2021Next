@@ -58,7 +58,7 @@ const Club = () => {
         "https://5rziby0p.api.sanity.io/v1/graphql/production/default",
     );
     const { data } = useGet_GolfersQuery(graphQlClient, {});
-    const { dancing, setDancing } = useStore();
+    const { dancing, setDancing, audio, setAudio } = useStore();
     const [positions, setPositions] = useState([[0, 0, 0]]);
     useEffect(() => {
         if (data?.allGolfer) {
@@ -80,7 +80,10 @@ const Club = () => {
                 }}
             >
                 <Button
-                    onClick={() => setDancing(!dancing ?? false)}
+                    onClick={async () => {
+                        !audio && (await setAudio());
+                        setDancing(!dancing ?? false);
+                    }}
                     colorScheme="teal"
                 >
                     <p style={{ marginBottom: "0px" }}>{`Turn Music ${
