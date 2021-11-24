@@ -41,7 +41,7 @@ export type Store = {
     levaGolfer: LevaGolfer;
     dancing: boolean;
     audio?: unknown;
-    setAudio?: () => Promise<unknown>;
+    setAudio: () => Promise<unknown>;
 
     setDancing: (value: boolean) => void;
 };

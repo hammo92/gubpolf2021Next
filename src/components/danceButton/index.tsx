@@ -18,8 +18,11 @@ export const DanceButton = () => {
             <Button
                 onClick={async () => {
                     setLoading(true);
-                    !audio && (await setAudio());
-                    setDancing(!dancing ?? false);
+                    if (!audio) {
+                        await setAudio();
+                    } else {
+                        setDancing(!dancing ?? false);
+                    }
                     setLoading(false);
                 }}
                 colorScheme="teal"
@@ -27,12 +30,16 @@ export const DanceButton = () => {
                 <Flex direction="column" alignContent="center">
                     <p style={{ marginBottom: "0px" }}>
                         {!loading
-                            ? `Turn Music ${dancing ? "Off" : "On"}`
+                            ? audio
+                                ? `Turn Music ${dancing ? "Off" : "On"}`
+                                : "Load Audio"
                             : "loading"}
                     </p>
                 </Flex>
             </Button>
-            <Text fontSize="xs">Needs to be on to dance...</Text>
+            <Text fontSize="xs" textAlign="center">
+                {audio ? "Needs to be on to dance..." : "Load up a tune"}
+            </Text>
         </div>
     );
 };
