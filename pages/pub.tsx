@@ -12,10 +12,11 @@ import {
     PerspectiveCamera,
 } from "@react-three/drei";
 import { GraphQLClient } from "graphql-request";
-import { useGet_GolfersQuery } from "@generated/graphql";
+import { Golfer, useGet_GolfersQuery } from "@generated/graphql";
 import { DanceLight, RoomLight } from "@components/lights";
 import { useStore } from "src/zustand";
 import { DanceButton } from "@components/danceButton";
+import { useList } from "react-use";
 
 const ROW_LENGTH = 16;
 const POSES_AMOUNT = 7;
@@ -45,11 +46,11 @@ const getPosition = (index) => {
     const position = [
         (index % ROW_LENGTH) +
             (index % ROW_LENGTH) * 1.2 +
-            Math.floor(Math.random() * (0.1 - -0.1 + 1) + -0.1),
+            Math.floor(Math.random() * (0.05 - -0.05 + 1) + -0.05),
         0,
         Math.floor(index / ROW_LENGTH) +
             Math.floor(index / ROW_LENGTH) * 1.2 +
-            Math.floor(Math.random() * (0.1 - -0.1 + 1) + -0.1),
+            Math.floor(Math.random() * (0.05 - -0.05 + 1) + -0.05),
     ];
     return position;
 };
@@ -58,17 +59,27 @@ const Club = () => {
     const graphQlClient = new GraphQLClient(
         "https://5rziby0p.api.sanity.io/v1/graphql/production/default",
     );
-    const { data } = useGet_GolfersQuery(graphQlClient, {});
-    const { dancing, setDancing, audio, setAudio } = useStore();
-    const [positions, setPositions] = useState([[0, 0, 0]]);
+    const { data } = useGet_GolfersQuery(
+        graphQlClient,
+        {},
+        { refetchInterval: 5000 },
+    );
+    const { dancing } = useStore();
+    const [positions, { upsert, push }] = useList<{
+        golfer: Golfer;
+        position: number[];
+    }>();
     useEffect(() => {
         if (data?.allGolfer) {
-            const pos = data?.allGolfer.map((golfer, index) =>
-                getPosition(index),
-            );
-            setPositions(pos);
+            data?.allGolfer.map((golfer, index) => {
+                upsert((a, b) => a.golfer.name === b.golfer.name, {
+                    golfer,
+                    position: getPosition(index),
+                });
+            });
         }
     }, [data]);
+    console.log("positions :>> ", positions);
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
             <DanceButton />
@@ -88,16 +99,12 @@ const Club = () => {
                     <pointLight position={[0, 10, 10]} intensity={1} />
 
                     <group position={[0, -1, 0]}>
-                        {data?.allGolfer &&
-                            data?.allGolfer.map((golfer, index) => {
-                                console.log(
-                                    "getPosition(index) :>> ",
-                                    getPosition(index),
-                                );
+                        {positions &&
+                            positions.map(({ golfer, position }, index) => {
                                 return (
                                     <Model
                                         golferData={golfer}
-                                        position={positions[index]}
+                                        position={position}
                                         key={`model ${index}`}
                                     />
                                 );
