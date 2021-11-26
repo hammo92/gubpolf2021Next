@@ -5,7 +5,7 @@ all actions and sets up a THREE.AnimationMixer for it so that you don't have to.
 All of the assets actions, action-names and clips are available in its output. 
 */
 import { Spacer, Flex, Box } from "@chakra-ui/react";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
     useGLTF,
     useTexture,
@@ -22,6 +22,7 @@ import { SkinnedMesh } from "./skinnedMesh";
 import { useStore } from "src/zustand";
 import { Golfer } from "@interfaces/model";
 const hiddenNodes = ["Ch33_Eyelashes", "Ch33_Belt"];
+import { useTimeoutFn } from "react-use";
 const nonTextured = [
     "Ch33_Tie",
     "Ch33_Shirt",
@@ -80,6 +81,15 @@ const getTieColour = (year: number | undefined) => {
     return colour;
 };
 
+function genRand(min: number, max: number, decimalPlaces: number): number {
+    const rand =
+        Math.random() < 0.5
+            ? (1 - Math.random()) * (max - min) + min
+            : Math.random() * (max - min) + min; // could be min or max or anything in between
+    const power = Math.pow(10, decimalPlaces);
+    return Math.floor(rand * power) / power;
+}
+
 const NameCard: React.FC<{ name: string }> = ({ name }) => (
     <group
     //onPointerOver={() => setHovered(true)}
@@ -107,99 +117,109 @@ const NameCard: React.FC<{ name: string }> = ({ name }) => (
     </group>
 );
 
-export const Model: React.FC<{ golferData: Golfer; position: number[] }> = ({
-    golferData,
-    position,
-}) => {
-    const golfer = useStore();
-    const {
-        name,
-        year = 0,
-        skinColour = "#ffffff",
-        hairColour = "#000000",
-        jacketColour = "#000000",
-        shirtColour = "#ffffff",
-        trouserColour = "#000000",
-        shoeColour = "#000000",
-        favouriteMove = 4,
-        idle = 0,
-    } = golferData ?? golfer.golfer;
-    const { dancing = false } = golfer;
-    // Fetch model and a separate texture
-    const { scene, animations } = useGLTF("/drunkManAllMoves.gltf");
-    const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-    const { nodes } = useGraph(clone);
-    const textures = [
-        useTexture("/Ch33_1001_Diffuse_greenJPG.jpg"),
-        useTexture("/Ch33_1001_DiffuseJPG.jpg"),
-    ];
-    // Extract animation actions
-    const { ref, actions, names } = useAnimations(animations);
-    // Hover and animation-index states
-    const [hovered, setHovered] = useState(false);
-    const [index, setIndex] = useState(0);
-    useEffect(() => {
-        dancing ? setIndex(favouriteMove) : setIndex(idle);
-    }, [dancing, favouriteMove, idle]);
-    // Animate the selection halo
-    const { color } = useSpring({
-        color: hovered ? "hotpink" : "aquamarine",
-    });
+export const ModelInner: React.FC<{ golferData: Golfer; position: number[] }> =
+    ({ golferData, position }) => {
+        console.log("render");
+        const golfer = useStore();
+        const {
+            name,
+            year = 0,
+            skinColour = "#ffffff",
+            hairColour = "#000000",
+            jacketColour = "#000000",
+            shirtColour = "#ffffff",
+            trouserColour = "#000000",
+            shoeColour = "#000000",
+            favouriteMove = 4,
+            idle = 0,
+        } = golferData ?? golfer.golfer;
+        const { dancing = false } = golfer;
 
-    const setColor = (key: string | undefined): string | undefined => {
-        if (key === "Ch33_Tie") return getTieColour(year);
-        if (key === "Ch33_Shirt") return shirtColour;
-        if (key === "Ch33_Pants") return trouserColour;
-        if (key === "Ch33_Suit") return jacketColour;
-        if (key === "Ch33_Hair") return hairColour;
-        if (key === "Ch33_Shoes") return shoeColour;
-        if (key === "Ch33_Body") return skinColour;
-        return "";
+        // Fetch model and a separate texture
+        const { scene, animations } = useGLTF("/drunkManAllMoves.gltf");
+        const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+        const { nodes } = useGraph(clone);
+        const textures = [
+            useTexture("/Ch33_1001_Diffuse_greenJPG.jpg"),
+            useTexture("/Ch33_1001_DiffuseJPG.jpg"),
+        ];
+        // Extract animation actions
+        const { ref, actions, names } = useAnimations(animations);
+        // Hover and animation-index states
+        const [hovered, setHovered] = useState(false);
+        const [index, setIndex] = useState(0);
+        useEffect(() => {
+            dancing ? setIndex(favouriteMove) : setIndex(idle);
+        }, [dancing, favouriteMove, idle]);
+        // Animate the selection halo
+        const { color } = useSpring({
+            color: hovered ? "hotpink" : "aquamarine",
+        });
+
+        const setColor = (key: string | undefined): string | undefined => {
+            if (key === "Ch33_Tie") return getTieColour(year);
+            if (key === "Ch33_Shirt") return shirtColour;
+            if (key === "Ch33_Pants") return trouserColour;
+            if (key === "Ch33_Suit") return jacketColour;
+            if (key === "Ch33_Hair") return hairColour;
+            if (key === "Ch33_Shoes") return shoeColour;
+            if (key === "Ch33_Body") return skinColour;
+            return "";
+        };
+
+        // Change cursor on hover-state
+        useCursor(hovered);
+        // Change animation when the index changes
+
+        useEffect(() => {
+            // Reset and fade in animation after an index has been changed
+            actions[names[index]]
+                ?.reset()
+                .fadeIn(0.5)
+                .setEffectiveTimeScale(genRand(0.85, 1.15, 1))
+                .play();
+
+            // In the clean-up phase, fade it out
+            return () => {
+                actions[names[index]]?.fadeOut(0.5);
+            };
+        }, [index, actions, names]);
+        return (
+            <group ref={ref} dispose={null} position={position}>
+                <group
+                    rotation={[Math.PI / 2, 0, 0]}
+                    scale={[0.01, 0.01, 0.01]}
+                >
+                    <primitive object={nodes.mixamorig7Hips} />
+                    {Object.keys(nodes).map((nodeKey) => {
+                        const node = nodes[nodeKey];
+                        if (
+                            node.type === "SkinnedMesh" &&
+                            !hiddenNodes.includes(nodeKey)
+                        )
+                            return (
+                                <SkinnedMesh node={node} key={nodeKey}>
+                                    <meshStandardMaterial
+                                        map={
+                                            nonTextured.includes(nodeKey)
+                                                ? null
+                                                : textures[1]
+                                        }
+                                        color={setColor(nodeKey)}
+                                        map-flipY={
+                                            nonTextured.includes(nodeKey)
+                                                ? undefined
+                                                : false
+                                        }
+                                    />
+                                </SkinnedMesh>
+                            );
+                    })}
+                </group>
+
+                {name && <NameCard name={name} />}
+            </group>
+        );
     };
 
-    // Change cursor on hover-state
-    useCursor(hovered);
-    // Change animation when the index changes
-
-    useEffect(() => {
-        // Reset and fade in animation after an index has been changed
-        actions[names[index]]?.reset().fadeIn(0.5).play();
-        // In the clean-up phase, fade it out
-        return () => {
-            actions[names[index]]?.fadeOut(0.5);
-        };
-    }, [index, actions, names]);
-    return (
-        <group ref={ref} dispose={null} position={position}>
-            <group rotation={[Math.PI / 2, 0, 0]} scale={[0.01, 0.01, 0.01]}>
-                <primitive object={nodes.mixamorig7Hips} />
-                {Object.keys(nodes).map((nodeKey) => {
-                    const node = nodes[nodeKey];
-                    if (
-                        node.type === "SkinnedMesh" &&
-                        !hiddenNodes.includes(nodeKey)
-                    )
-                        return (
-                            <SkinnedMesh node={node}>
-                                <meshStandardMaterial
-                                    map={
-                                        nonTextured.includes(nodeKey)
-                                            ? null
-                                            : textures[1]
-                                    }
-                                    color={setColor(nodeKey)}
-                                    map-flipY={
-                                        nonTextured.includes(nodeKey)
-                                            ? undefined
-                                            : false
-                                    }
-                                />
-                            </SkinnedMesh>
-                        );
-                })}
-            </group>
-
-            {name && <NameCard name={name} />}
-        </group>
-    );
-};
+export const Model = React.memo(ModelInner);

@@ -50,15 +50,24 @@ function Rig() {
     );
 }
 
+function genRand(min: number, max: number, decimalPlaces: number): number {
+    const rand =
+        Math.random() < 0.5
+            ? (1 - Math.random()) * (max - min) + min
+            : Math.random() * (max - min) + min; // could be min or max or anything in between
+    const power = Math.pow(10, decimalPlaces);
+    return Math.floor(rand * power) / power;
+}
+
 const getPosition = (index) => {
     const position = [
         (index % ROW_LENGTH) +
             (index % ROW_LENGTH) * 1.2 +
-            Math.floor(Math.random() * (0.05 - -0.05 + 1) + -0.05),
+            genRand(-0.35, 0.35, 2),
         0,
         Math.floor(index / ROW_LENGTH) +
             Math.floor(index / ROW_LENGTH) * 1.2 +
-            Math.floor(Math.random() * (0.05 - -0.05 + 1) + -0.05),
+            genRand(-0.35, 0.35, 2),
     ];
     return position;
 };
