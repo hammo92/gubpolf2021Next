@@ -81,6 +81,7 @@ const Club = () => {
         {},
         { refetchInterval: 5000 },
     );
+    console.log(`data`, data);
     const { dancing } = useStore();
     const [positions, { upsert, push }] = useList<{
         golfer: Golfer;

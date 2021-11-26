@@ -11,6 +11,7 @@ query GET_GOLFERS {
         greenJacketOwner
         tieNeeded
         attending
+        skinColour
         paid
         idle
         favouriteMove
