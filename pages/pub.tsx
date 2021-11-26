@@ -19,7 +19,7 @@ import { DanceButton } from "@components/danceButton";
 import { useList } from "react-use";
 import { useControls } from "leva";
 
-const ROW_LENGTH = 16;
+const ROW_LENGTH = 10;
 const POSES_AMOUNT = 7;
 
 function Rig() {
@@ -62,12 +62,12 @@ function genRand(min: number, max: number, decimalPlaces: number): number {
 const getPosition = (index) => {
     const position = [
         (index % ROW_LENGTH) +
-            (index % ROW_LENGTH) * 1.2 +
-            genRand(-0.35, 0.35, 2),
+            (index % ROW_LENGTH) * 1.5 +
+            genRand(-0.5, 0.5, 2),
         0,
         Math.floor(index / ROW_LENGTH) +
-            Math.floor(index / ROW_LENGTH) * 1.2 +
-            genRand(-0.35, 0.35, 2),
+            Math.floor(index / ROW_LENGTH) * 2 +
+            genRand(-0.5, 0.5, 2),
     ];
     return position;
 };
@@ -100,7 +100,7 @@ const Club = () => {
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
             <DanceButton />
-            <Canvas shadows camera={{ position: [30, 10, 30], fov: 25 }}>
+            <Canvas shadows camera={{ position: [40, 10, 40], fov: 25 }}>
                 <Suspense fallback={null}>
                     {/* <Track
                         url="/September.mp3"
