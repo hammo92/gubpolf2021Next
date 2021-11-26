@@ -17,6 +17,7 @@ import { DanceLight, RoomLight } from "@components/lights";
 import { useStore } from "src/zustand";
 import { DanceButton } from "@components/danceButton";
 import { useList } from "react-use";
+import { useControls } from "leva";
 
 const ROW_LENGTH = 16;
 const POSES_AMOUNT = 7;
@@ -24,10 +25,17 @@ const POSES_AMOUNT = 7;
 function Rig() {
     const [vec] = useState(() => new THREE.Vector3());
     const { camera, mouse } = useThree();
-    console.log("camera :>> ", camera);
-    camera.rotation.x = -0.5;
-    camera.rotation.y = 0.4;
-    camera.rotation.z = 0.2;
+    /*const { x, y, z } = useControls({
+        x: -0.3,
+        y: 0.6,
+        z: 0.2,
+    });
+    useEffect(() => {
+        camera.rotation.x = x;
+        camera.rotation.y = y;
+        camera.rotation.z = z;
+    }, [x, y, z]);*/
+
     return (
         <>
             <CameraShake
@@ -79,11 +87,10 @@ const Club = () => {
             });
         }
     }, [data]);
-    console.log("positions :>> ", positions);
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
             <DanceButton />
-            <Canvas shadows camera={{ position: [20, 10, 15], fov: 25 }}>
+            <Canvas shadows camera={{ position: [30, 10, 30], fov: 25 }}>
                 <Suspense fallback={null}>
                     {/* <Track
                         url="/September.mp3"
@@ -98,7 +105,7 @@ const Club = () => {
 
                     <pointLight position={[0, 10, 10]} intensity={1} />
 
-                    <group position={[0, -1, 0]}>
+                    <group position={[-8, -1, 0]}>
                         {positions &&
                             positions.map(({ golfer, position }, index) => {
                                 return (
