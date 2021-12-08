@@ -50,8 +50,8 @@ async function CreateGolfer(req, res) {
     const golfers = await client.fetch(query);
     shuffle(golfers);
     let sliced = sliceIntoChunks(golfers, 4);
-    if (sliced.at(-1).length < 4) {
-        sliced.at(-1).map((golfer) => {
+    if (sliced[sliced.length - 1].length < 4) {
+        sliced[sliced.length - 1].map((golfer) => {
             const addToRandomGroup = () => {
                 const randomGroup = randomIntFromInterval(0, sliced.length - 1);
                 if (sliced[randomGroup].length === 4) {
