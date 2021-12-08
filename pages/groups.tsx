@@ -59,7 +59,6 @@ const Groups = () => {
                                 return (
                                     <Flex
                                         direction="column"
-                                        justifyContent="center"
                                         bg="#22543D"
                                         borderRadius={5}
                                         overflow="hidden"

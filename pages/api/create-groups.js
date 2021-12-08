@@ -77,9 +77,8 @@ async function CreateGolfer(req, res) {
         //await client.commit();
     });
     const result = await transaction.commit();
-    console.log(`result`, result);
     if (golfers) {
-        res.status(200).json({ golfers });
+        res.status(200).json({ result });
     } else {
         res.status(500).json({ error: "messed up" });
     }
