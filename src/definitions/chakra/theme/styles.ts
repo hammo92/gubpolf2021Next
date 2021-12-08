@@ -14,4 +14,8 @@ export default {
             },
         },
     },
+    fonts: {
+        heading: "gopher",
+        body: "roc-grotesk",
+    },
 } as GlobalStyles;

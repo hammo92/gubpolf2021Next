@@ -15,5 +15,6 @@ query GET_GOLFERS {
         paid
         idle
         favouriteMove
+        group
     }
 }

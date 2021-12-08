@@ -14,13 +14,10 @@ const client = sanityClient({
 
 async function CreateGolfer(req, res) {
     const { golfer, stripeSessionId } = req.body;
-    console.log(
-        `process.env.SANITY_API_TOKEN,`,
-        process.env.NEXT_PUBLIC_SANITY_API_TOKEN,
-    );
     const { status } = await stripe.checkout.sessions.retrieve(stripeSessionId);
     if (status === "complete") {
         const newGolfer = await client.create({ _type: "golfer", ...golfer });
+
         res.status(200).json({ golfer: newGolfer });
     } else {
         res.status(500).json({ error: "payment error" });

@@ -59,7 +59,7 @@ function genRand(min: number, max: number, decimalPlaces: number): number {
     return Math.floor(rand * power) / power;
 }
 
-const getPosition = (index) => {
+const getPosition = (index: number) => {
     const position = [
         (index % ROW_LENGTH) +
             (index % ROW_LENGTH) * 1.5 +
@@ -72,6 +72,70 @@ const getPosition = (index) => {
     return position;
 };
 
+const getGroupPosition = (index: number) => {
+    const position = [
+        (index % 4) + (index % 4) * 6.5 + genRand(-0.2, 0.2, 2),
+        0,
+        Math.floor(index / 4) +
+            Math.floor(index / 4) * 6.5 +
+            genRand(-0.2, 0.2, 2),
+    ];
+    return position;
+};
+
+const getPositionInGroup = (index: number, groupLength: number) => {
+    if (index !== 4)
+        return [
+            (index % 2) +
+                (index % 2) * (groupLength === 4 ? 1.2 : 1.8) +
+                genRand(-0.25, 0.25, 2),
+            0,
+            Math.floor(index / 2) +
+                Math.floor(index / 2) * (groupLength === 4 ? 1.4 : 2.2) +
+                genRand(-0.25, 0.25, 2),
+        ];
+    return [1.5, 0, 1.5];
+};
+
+const initaliseGolferList = (
+    golfers: Golfer[],
+): {
+    position: number[];
+    golfers: {
+        golfer: never;
+        position: number[];
+    }[];
+}[] => {
+    const groups = [[]];
+
+    const notAssigned = golfers.filter((golfer) => golfer.group === undefined);
+
+    const inGroups = golfers
+        .filter((golfer) => golfer.group !== null || golfer.group !== undefined)
+        .sort((a, b) => a?.group - b?.group);
+
+    inGroups.map((golfer: Golfer) => {
+        if (golfer.group) {
+            console.log(`golfer.group`, golfer.group);
+            !groups[golfer.group] && groups.push([]);
+            groups[golfer.group].push(golfer);
+        }
+    });
+    const groupsWithPositions = groups
+        .filter((group) => group.length)
+        .map((group, index) => ({
+            position: getGroupPosition(index),
+            golfers: group.map((golfer, index) => {
+                return {
+                    golfer,
+                    position: getPositionInGroup(index, group.length),
+                };
+            }),
+        }));
+    //console.log("groupsWithPositions :>> ", groupsWithPositions);
+    return groupsWithPositions;
+};
+
 const Club = () => {
     const graphQlClient = new GraphQLClient(
         "https://5rziby0p.api.sanity.io/v1/graphql/production/default",
@@ -81,26 +145,40 @@ const Club = () => {
         {},
         { refetchInterval: 5000 },
     );
-    console.log(`data`, data);
+    //console.log(`data`, data);
     const { dancing } = useStore();
-    const [positions, { upsert, push }] = useList<{
-        golfer: Golfer;
+    const [positions, { upsert, push, set }] = useList<{
         position: number[];
+        golfers: {
+            golfer: never;
+            position: number[];
+        }[];
     }>();
     useEffect(() => {
         if (data?.allGolfer) {
+            const groups = initaliseGolferList(data?.allGolfer);
+            set(groups);
+            console.log(`groups`, groups);
+            /*const notAssigned = data?.allGolfer.filter(
+                (golfer) => golfer.group === undefined,
+            );
+            const inGroups = data?.allGolfer
+                .filter((golfer) => golfer.group !== undefined)
+                .sort((a, b) => a?.group - b?.group);
+
+            const sorted = data?.allGolfer.sort((a, b) => a?.group - b?.group);
             data?.allGolfer.map((golfer, index) => {
                 upsert((a, b) => a.golfer.name === b.golfer.name, {
                     golfer,
                     position: getPosition(index),
                 });
-            });
+            });*/
         }
     }, [data]);
     return (
         <div style={{ width: "100vw", height: "100vh" }}>
             <DanceButton />
-            <Canvas shadows camera={{ position: [40, 10, 40], fov: 25 }}>
+            <Canvas shadows camera={{ position: [40, 30, 40], fov: 25 }}>
                 <Suspense fallback={null}>
                     {/* <Track
                         url="/September.mp3"
@@ -115,8 +193,8 @@ const Club = () => {
 
                     <pointLight position={[0, 10, 10]} intensity={1} />
 
-                    <group position={[-8, -1, 0]}>
-                        {positions &&
+                    <group position={[-8, 0, -12]}>
+                        {/*positions &&
                             positions.map(({ golfer, position }, index) => {
                                 return (
                                     <Model
@@ -124,6 +202,20 @@ const Club = () => {
                                         position={position}
                                         key={`model ${index}`}
                                     />
+                                );
+                            })*/}
+                        {positions &&
+                            positions.map((group, index) => {
+                                return (
+                                    <group position={group.position}>
+                                        {group.golfers.map((golfer) => (
+                                            <Model
+                                                golferData={golfer.golfer}
+                                                position={golfer.position}
+                                                key={`model ${index} - ${golfer.position}`}
+                                            />
+                                        ))}
+                                    </group>
                                 );
                             })}
                     </group>

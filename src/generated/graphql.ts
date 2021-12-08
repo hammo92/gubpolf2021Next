@@ -175,6 +175,7 @@ export type Golfer = Document & {
   attending?: Maybe<Scalars['Boolean']>;
   favouriteMove?: Maybe<Scalars['Float']>;
   greenJacketOwner?: Maybe<Scalars['Boolean']>;
+  group?: Maybe<Scalars['Float']>;
   hairColour?: Maybe<Scalars['String']>;
   idle?: Maybe<Scalars['Float']>;
   jacketColour?: Maybe<Scalars['String']>;
@@ -201,6 +202,7 @@ export type GolferFilter = {
   attending?: InputMaybe<BooleanFilter>;
   favouriteMove?: InputMaybe<FloatFilter>;
   greenJacketOwner?: InputMaybe<BooleanFilter>;
+  group?: InputMaybe<FloatFilter>;
   hairColour?: InputMaybe<StringFilter>;
   idle?: InputMaybe<FloatFilter>;
   jacketColour?: InputMaybe<StringFilter>;
@@ -225,6 +227,7 @@ export type GolferSorting = {
   attending?: InputMaybe<SortOrder>;
   favouriteMove?: InputMaybe<SortOrder>;
   greenJacketOwner?: InputMaybe<SortOrder>;
+  group?: InputMaybe<SortOrder>;
   hairColour?: InputMaybe<SortOrder>;
   idle?: InputMaybe<SortOrder>;
   jacketColour?: InputMaybe<SortOrder>;
@@ -773,7 +776,7 @@ export type StringFilter = {
 export type Get_GolfersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Get_GolfersQuery = { __typename?: 'RootQuery', allGolfer: Array<{ __typename?: 'Golfer', name?: string | null | undefined, year?: number | null | undefined, shoeColour?: string | null | undefined, tieColour?: string | null | undefined, trouserColour?: string | null | undefined, shirtColour?: string | null | undefined, jacketColour?: string | null | undefined, hairColour?: string | null | undefined, greenJacketOwner?: boolean | null | undefined, tieNeeded?: boolean | null | undefined, attending?: boolean | null | undefined, skinColour?: string | null | undefined, paid?: boolean | null | undefined, idle?: number | null | undefined, favouriteMove?: number | null | undefined }> };
+export type Get_GolfersQuery = { __typename?: 'RootQuery', allGolfer: Array<{ __typename?: 'Golfer', name?: string | null | undefined, year?: number | null | undefined, shoeColour?: string | null | undefined, tieColour?: string | null | undefined, trouserColour?: string | null | undefined, shirtColour?: string | null | undefined, jacketColour?: string | null | undefined, hairColour?: string | null | undefined, greenJacketOwner?: boolean | null | undefined, tieNeeded?: boolean | null | undefined, attending?: boolean | null | undefined, skinColour?: string | null | undefined, paid?: boolean | null | undefined, idle?: number | null | undefined, favouriteMove?: number | null | undefined, group?: number | null | undefined }> };
 
 
 export const Get_GolfersDocument = `
@@ -794,6 +797,7 @@ export const Get_GolfersDocument = `
     paid
     idle
     favouriteMove
+    group
   }
 }
     `;

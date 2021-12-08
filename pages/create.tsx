@@ -1,4 +1,3 @@
-import { Button, useDisclosure } from "@chakra-ui/react";
 import { DanceLight, RoomLight } from "@components/lights";
 import { Model } from "@components/model";
 import { CameraShake, Loader, OrbitControls } from "@react-three/drei";
@@ -49,7 +48,6 @@ const Create = () => {
     useControls(() => ({ ...golfer.levaGolfer }), []);
     const { dancing, setDancing, setAudio, audio } = golfer;
     const [loading, setLoading] = useState(false);
-    const { isOpen, onOpen, onClose } = useDisclosure();
     return (
         <>
             <div style={{ width: "100vw", height: "100vh" }}>

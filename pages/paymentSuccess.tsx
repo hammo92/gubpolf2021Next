@@ -23,7 +23,7 @@ const PaymentSuccess: React.FC = () => {
                         stripeSessionId,
                         golfer: JSON.parse(golfer),
                     });
-
+                    await fetch("/api/add-golfer-to-group");
                     localStorage.removeItem("stripeSessionId");
                     console.log("removed");
                     setGolferAdded(true);
