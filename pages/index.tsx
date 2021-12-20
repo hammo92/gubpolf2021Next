@@ -21,10 +21,12 @@ const Home: React.FC = () => {
                 height="100%"
                 justifyContent="center"
             >
-                <Heading color="#fefefe">Welcome to Gub Polf 2021</Heading>
+                <Heading color="#fefefe">
+                    Gub Polf 2022 - The Platinum Jubilee
+                </Heading>
                 <Text fontSize="3xl" color="#ffffff">
                     <Countdown
-                        date={new Date("December 23, 2021 18:30:00")}
+                        date={new Date("June 2, 2022 18:30:00")}
                         renderer={dateRenderer}
                     />
                 </Text>
