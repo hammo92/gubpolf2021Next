@@ -30,12 +30,20 @@ const Home: React.FC = () => {
                         renderer={dateRenderer}
                     />
                 </Text>
-                <Button
-                    onClick={() => router.push("/create")}
-                    colorScheme="teal"
-                >
-                    Sign up
-                </Button>
+                <Flex gap="10px">
+                    <Button
+                        onClick={() => router.push("/create")}
+                        colorScheme="teal"
+                    >
+                        Sign up
+                    </Button>
+                    <Button
+                        onClick={() => router.push("/pub")}
+                        colorScheme="blue"
+                    >
+                        Enter the pub
+                    </Button>
+                </Flex>
             </Flex>
         </Box>
     );

@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { GraphQLClient } from "graphql-request";
 import { Golfer, useGet_GolfersQuery } from "@generated/graphql";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 const CreateGroupList = (golfers: Golfer[]): Golfer[][] => {
     const groups = [[]];
@@ -31,6 +33,7 @@ const CreateGroupList = (golfers: Golfer[]): Golfer[][] => {
 };
 
 const Groups = () => {
+    const router = useRouter();
     const graphQlClient = new GraphQLClient(
         "https://5rziby0p.api.sanity.io/v1/graphql/production/default",
     );
@@ -39,18 +42,21 @@ const Groups = () => {
         {},
         { refetchInterval: 5000 },
     );
+    console.log("data", data);
     const [groups, setGroups] = useState<Golfer[][]>();
     useEffect(() => {
         data && setGroups(CreateGroupList(data.allGolfer));
     }, [data]);
 
-    console.log("groups :>> ", groups);
     return (
         <Div100vh>
             <Flex direction="column" p={3} bg="#171923">
                 <Heading pb={1} fontSize="6xl" textAlign="center">
                     Groups
                 </Heading>
+                <Box textAlign="center" textDecoration="underline">
+                    <Link href="/pub">Enter the pub</Link>
+                </Box>
                 <SimpleGrid columns={[2, null, 3]} spacing="20px" py={5}>
                     {groups &&
                         groups
