@@ -4,7 +4,7 @@ const client = sanityClient({
     projectId: "5rziby0p",
     dataset: "production",
     useCdn: false,
-    apiVersion: "2021-11-21",
+    apiVersion: "2022-06-01",
     token: process.env.NEXT_PUBLIC_SANITY_API_TOKEN,
 });
 
@@ -46,10 +46,14 @@ function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-async function CreateGolfer(req, res) {
+async function GroupGolfers(req, res) {
     const golfers = await client.fetch(query);
-    shuffle(golfers);
-    let sliced = sliceIntoChunks(golfers, 4);
+    const noDrafts = golfers.filter((golfer) => !golfer._id.includes("draft"));
+    shuffle(noDrafts);
+
+    //split into groups of 4
+    let sliced = sliceIntoChunks(noDrafts, 4);
+
     if (sliced[sliced.length - 1].length < 4) {
         sliced[sliced.length - 1].map((golfer) => {
             const addToRandomGroup = () => {
@@ -84,4 +88,4 @@ async function CreateGolfer(req, res) {
     }
 }
 
-export default CreateGolfer;
+export default GroupGolfers;
